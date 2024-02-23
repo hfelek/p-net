@@ -27,6 +27,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "sys/shm.h"
+
+
+
+
 /* Events handled by main task */
 #define APP_EVENT_READY_FOR_DATA BIT (0)
 #define APP_EVENT_TIMER          BIT (1)
@@ -106,6 +111,8 @@ static void app_cyclic_data_callback (app_subslot_t * subslot, void * tag);
 
 /** Static app data */
 static app_data_t app_state;
+static int ShmId;
+PT9PLC pShmT9Plc;
 
 pnet_t * app_get_pnet_instance (app_data_t * app)
 {
@@ -133,6 +140,18 @@ app_data_t * app_init (const pnet_cfg_t * pnet_cfg, const app_args_t * app_args)
    uint16_t i;
 
    APP_LOG_INFO ("Init P-Net stack and sample application\n");
+   
+   if ((ShmId = shmget(1984, 7244, IPC_CREAT | 0644)) < 0)
+	{
+		APP_LOG_DEV_INFO("shmget error\n");
+		return NULL;
+	}
+
+	if ((pShmT9Plc = (T9PLC *)shmat(ShmId, NULL, 0)) == NULL)
+	{
+		APP_LOG_DEV_INFO("shmget error\n");
+		return NULL;
+	}
 
    app = &app_state;
 
@@ -370,10 +389,27 @@ static int app_write_ind (
       (unsigned)idx,
       sequence_number,
       write_length);
-
+   APP_LOG_DEV_INFO (
+      "PLC write record indication.\n"
+      "  AREP: %u API: %u Slot: %2u Subslot: %u Index: %u Sequence: %2u "
+      "Length: %u\n",
+      arep,
+      api,
+      slot_nbr,
+      subslot_nbr,
+      (unsigned)idx,
+      sequence_number,
+      write_length);
    subslot = app_utils_subslot_get (&app->main_api, slot_nbr, subslot_nbr);
    if (subslot == NULL)
    {
+      APP_LOG_DEV_INFO (
+         "No submodule plugged in AREP: %u API: %u Slot: %2u Subslot: %u "
+         "Index will not be written.\n",
+         arep,
+         api,
+         slot_nbr,
+         subslot_nbr);
       APP_LOG_WARNING (
          "No submodule plugged in AREP: %u API: %u Slot: %2u Subslot: %u "
          "Index will not be written.\n",
@@ -396,6 +432,7 @@ static int app_write_ind (
       idx,
       p_write_data,
       write_length);
+   // TODO:HF burayı -1 dönüyor!
    if (result != 0)
    {
       APP_LOG_WARNING (
@@ -625,7 +662,12 @@ static int app_exp_module_ind (
       slot,
       (unsigned)module_ident,
       module_name);
-
+   APP_LOG_DEV_INFO (
+      "  Plug module.        API: %u Slot: %2u Module ID: 0x%x \"%s\"\n",
+      api,
+      slot,
+      (unsigned)module_ident,
+      module_name);
    ret = pnet_plug_module (net, api, slot, module_ident);
    if (ret == 0)
    {
@@ -634,6 +676,12 @@ static int app_exp_module_ind (
          slot,
          module_ident,
          module_name);
+      APP_LOG_DEV_INFO (
+         "Plug module successfull. Ret: %u API: %u Slot: %2u Module ID: 0x%x\n",
+         ret,
+         api,
+         slot,
+         (unsigned)module_ident);
    }
    else
    {
@@ -764,6 +812,15 @@ static int app_exp_submodule_ind (
          name,
          cyclic_data_callback,
          app);
+      APP_LOG_DEV_INFO (
+         "  Plug submodule successfull. Ret: %u API: %u Slot: %2u Subslot %u "
+         "Module ID: 0x%x Submodule ID: 0x%x \n",
+         ret,
+         api,
+         slot,
+         subslot,
+         (unsigned)module_id,
+         (unsigned)submodule_id);
    }
    else
    {
@@ -809,9 +866,10 @@ static int app_new_data_status_ind (
       (data_status & BIT (PNET_DATA_STATUS_BIT_IGNORE))
          ? "Ignore data status"
          : "Evaluate data status");
-
+   APP_LOG_DEV_INFO("Herexd\n");
    if (is_running == false || is_valid == false)
    {
+      APP_LOG_DEV_INFO("Herecd\n");
       app_set_outputs_default_value();
    }
 
@@ -998,7 +1056,8 @@ static void app_cyclic_data_callback (app_subslot_t * subslot, void * tag)
    uint16_t outdata_length;
    uint8_t outdata_iops;
    uint8_t outdata_buf[20]; /* Todo: Remove temporary buffer */
-
+   // APP_LOG_DEV_INFO("Cyclic Call\n");
+   //APP_LOG_DEV_INFO("Here\n");
    if (app == NULL)
    {
       APP_LOG_ERROR ("Application tag not set in subslot?\n");
@@ -1046,6 +1105,7 @@ static void app_cyclic_data_callback (app_subslot_t * subslot, void * tag)
       }
       else
       {
+         APP_LOG_DEV_INFO("outdata_iops == PNET_IOXS_GOOD\n");
          app_set_outputs_default_value();
       }
    }

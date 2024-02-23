@@ -339,6 +339,7 @@ const char * app_utils_event_to_string (pnet_event_values_t event)
 
 int app_utils_pnet_cfg_init_default (pnet_cfg_t * cfg)
 {
+   APP_LOG_DEV_INFO("app_utils_pnet_cfg_init_default\n");
    memset (cfg, 0, sizeof (pnet_cfg_t));
 
    cfg->tick_us = APP_TICK_INTERVAL_US;
@@ -442,6 +443,7 @@ int app_utils_get_netif_namelist (
    app_utils_netif_namelist_t * p_if_list,
    uint16_t * p_num_ports)
 {
+   APP_LOG_DEV_INFO("app_utils_get_netif_namelist\n");
    int ret = 0;
    uint16_t i = 0;
    uint16_t j = 0;
@@ -539,6 +541,7 @@ int app_utils_pnet_cfg_init_netifs (
    uint16_t * number_of_ports,
    pnet_if_cfg_t * if_cfg)
 {
+   APP_LOG_DEV_INFO("app_utils_pnet_cfg_init_netifs\n");
    int ret = 0;
    int i = 0;
    pnal_ipaddr_t ip;
@@ -599,6 +602,7 @@ void app_utils_print_network_config (
    pnet_if_cfg_t * if_cfg,
    uint16_t number_of_ports)
 {
+   APP_LOG_DEV_INFO("app_utils_print_network_config\n");
    uint16_t i;
    char hostname_string[PNAL_HOSTNAME_MAX_SIZE]; /* Terminated string */
 
@@ -646,6 +650,7 @@ void app_utils_print_ioxs_change (
    uint8_t ioxs_current,
    uint8_t ioxs_new)
 {
+   //APP_LOG_DEV_INFO("app_utils_print_ioxs_change\n");
    if (ioxs_current != ioxs_new)
    {
       if (ioxs_new == PNET_IOXS_BAD)
@@ -686,6 +691,7 @@ int app_utils_plug_module (
    uint32_t id,
    const char * name)
 {
+   APP_LOG_DEV_INFO("app_utils_plug_module\n");
    if (slot_nbr >= PNET_MAX_SLOTS)
    {
       return -1;
@@ -700,6 +706,7 @@ int app_utils_plug_module (
 
 int app_utils_pull_module (app_api_t * p_api, uint16_t slot_nbr)
 {
+   APP_LOG_DEV_INFO("app_utils_pull_module\n");
    if (slot_nbr >= PNET_MAX_SLOTS)
    {
       return -1;
@@ -721,7 +728,7 @@ app_subslot_t * app_utils_plug_submodule (
    void * tag)
 {
    uint16_t subslot_ix;
-
+   APP_LOG_DEV_INFO("app_utils_plug_submodule\n");
    if (slot_nbr >= PNET_MAX_SLOTS || p_api == NULL || p_data_cfg == NULL)
    {
       return NULL;
@@ -758,6 +765,7 @@ int app_utils_pull_submodule (
    uint16_t slot_nbr,
    uint16_t subslot_nbr)
 {
+   APP_LOG_DEV_INFO("app_utils_pull_submodule\n");
    app_subslot_t * p_subslot = NULL;
 
    if (slot_nbr >= PNET_MAX_SUBSLOTS || p_api == NULL)
@@ -782,10 +790,12 @@ app_subslot_t * app_utils_subslot_get (
    uint16_t slot_nbr,
    uint16_t subslot_nbr)
 {
+   APP_LOG_DEV_INFO("app_utils_subslot_get\n");
    uint16_t subslot_ix;
 
    if (slot_nbr >= PNET_MAX_SLOTS || p_api == NULL)
    {
+      APP_LOG_DEV_INFO("app_utils_subslot_get: RETURN NULL\n");
       return NULL;
    }
 
@@ -793,15 +803,18 @@ app_subslot_t * app_utils_subslot_get (
    {
       if (p_api->slots[slot_nbr].subslots[subslot_ix].subslot_nbr == subslot_nbr)
       {
+         APP_LOG_DEV_INFO("app_utils_subslot_get: RETURN value\n");
          return &p_api->slots[slot_nbr].subslots[subslot_ix];
       }
    }
+   APP_LOG_DEV_INFO("app_utils_subslot_get: RETURN NULL\n");
 
    return NULL;
 }
 
 bool app_utils_subslot_is_input (const app_subslot_t * p_subslot)
 {
+   APP_LOG_DEV_INFO("app_utils_subslot_is_input\n");
    if (p_subslot == NULL || p_subslot->used == false)
    {
       return false;
@@ -819,6 +832,7 @@ bool app_utils_subslot_is_input (const app_subslot_t * p_subslot)
 
 bool app_utils_subslot_is_no_io (const app_subslot_t * p_subslot)
 {
+   APP_LOG_DEV_INFO("app_utils_subslot_is_no_io\n");
    if (p_subslot == NULL || p_subslot->used == false)
    {
       return false;
@@ -829,6 +843,7 @@ bool app_utils_subslot_is_no_io (const app_subslot_t * p_subslot)
 
 bool app_utils_subslot_is_output (const app_subslot_t * p_subslot)
 {
+   APP_LOG_DEV_INFO("app_utils_subslot_is_output\n");
    if (p_subslot == NULL || p_subslot->used == false)
    {
       return false;
@@ -846,6 +861,7 @@ bool app_utils_subslot_is_output (const app_subslot_t * p_subslot)
 
 void app_utils_cyclic_data_poll (app_api_t * p_api)
 {
+   //APP_LOG_DEV_INFO("app_utils_cyclic_data_poll\n");
    uint16_t slot_nbr;
    uint16_t subslot_index;
    app_subslot_t * p_subslot;

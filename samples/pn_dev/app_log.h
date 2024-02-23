@@ -29,6 +29,7 @@ extern "C" {
 #endif
 
 #include <stdint.h>
+#include <stddef.h>
 
 #define APP_LOG_LEVEL_DEBUG   0x00
 #define APP_LOG_LEVEL_INFO    0x01
@@ -36,15 +37,17 @@ extern "C" {
 #define APP_LOG_LEVEL_ERROR   0x03
 #define APP_LOG_LEVEL_FATAL   0x04
 
-#define APP_DEFAULT_LOG_LEVEL APP_LOG_LEVEL_FATAL
+#define APP_DEFAULT_LOG_LEVEL APP_LOG_LEVEL_INFO
 
 #define APP_LOG(level, ...) app_log (level, __VA_ARGS__)
+#define APP_LOG_DEV(level, ...) app_log_dev (level, __VA_ARGS__)
 
 #define APP_LOG_DEBUG(...)   APP_LOG (APP_LOG_LEVEL_DEBUG, __VA_ARGS__)
 #define APP_LOG_INFO(...)    APP_LOG (APP_LOG_LEVEL_INFO, __VA_ARGS__)
 #define APP_LOG_WARNING(...) APP_LOG (APP_LOG_LEVEL_WARNING, __VA_ARGS__)
 #define APP_LOG_ERROR(...)   APP_LOG (APP_LOG_LEVEL_ERROR, __VA_ARGS__)
 #define APP_LOG_FATAL(...)   APP_LOG (APP_LOG_LEVEL_FATAL, __VA_ARGS__)
+#define APP_LOG_DEV_INFO(...)  APP_LOG_DEV(APP_LOG_LEVEL_INFO, __VA_ARGS__)
 
 /**
  * Print log message depending on level
@@ -53,6 +56,7 @@ extern "C" {
  * @param fmt           In: Log message format string
  */
 void app_log (int32_t level, const char * fmt, ...);
+void app_log_dev (int32_t level, const char * fmt, ...);
 
 /**
  * Log an array of bytes
@@ -67,6 +71,7 @@ void app_log_print_bytes (int32_t level, const uint8_t * bytes, uint32_t length)
  * @param level         In: Log level
  */
 void app_log_set_log_level (int32_t level);
+void logBuffer (const void* , size_t);
 
 #ifdef __cplusplus
 }

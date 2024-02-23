@@ -20,6 +20,18 @@
 
 static int32_t log_level = APP_DEFAULT_LOG_LEVEL;
 
+void logBuffer (const void * buffer, size_t size)
+{
+   const unsigned char * byteBuffer = (const unsigned char *)buffer;
+
+   for (size_t i = 0; i < size; ++i)
+   {
+      printf ("%02X ", byteBuffer[i]);
+   }
+   printf ("\n");
+   fflush (stdout); // Flush the output buffer
+}
+
 void app_log_set_log_level (int32_t level)
 {
    log_level = level;
@@ -37,7 +49,19 @@ void app_log (int32_t level, const char * fmt, ...)
       fflush (stdout);
    }
 }
+void app_log_dev (int32_t level, const char * fmt, ...)
+{
+   va_list list;
 
+   if (level >= log_level)
+   {
+      va_start (list, fmt);
+      printf("DEV: ");
+      vprintf (fmt, list);
+      va_end (list);
+      fflush (stdout);
+   }
+}
 void app_log_print_bytes (int32_t level, const uint8_t * bytes, uint32_t len)
 {
    if (level >= log_level)

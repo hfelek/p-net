@@ -26,6 +26,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+extern PT9PLC pShmT9Plc;
+
 #define APP_DATA_DEFAULT_OUTPUT_DATA 0
 
 /* Parameter data for digital submodules
@@ -46,7 +48,7 @@ static uint32_t app_param_echo_gain = 1; /* Network endianness */
 /* Digital submodule process data
  * The stored value is shared between all digital submodules in this example. */
 static uint8_t inputdata[APP_GSDML_INPUT_DATA_DIGITAL_SIZE] = {0};
-static uint8_t outputdata[APP_GSDML_OUTPUT_DATA_DIGITAL_SIZE] = {0};
+static uint8_t outputdata[APP_GSDML_DO8_IO_DATA_OUTPUT_SIZE] = {0};
 static uint8_t counter = 0;
 
 /* Network endianness */
@@ -168,17 +170,21 @@ int app_data_set_output_data (
    uint16_t size)
 {
    bool led_state;
-
+   // APP_LOG_DEV_INFO ("app_data_set_output_data: ");
+   // APP_LOG_DEV_INFO (
+   //    "slot number: %hu, subslot_nbr: %hu,submodule_id: %u,data:",
+   //    slot_nbr,
+   //    subslot_nbr,
+   //    submodule_id);
+   // logBuffer (data, size);
    if (data == NULL)
    {
       return -1;
    }
 
-   if (
-      submodule_id == APP_GSDML_SUBMOD_ID_DIGITAL_OUT ||
-      submodule_id == APP_GSDML_SUBMOD_ID_DIGITAL_IN_OUT)
+   if (submodule_id == APP_GSDML_SUBMOD_ID_DIGITAL_IN_OUT)
    {
-      if (size == APP_GSDML_OUTPUT_DATA_DIGITAL_SIZE)
+      if (size == APP_GSDML_DO8_IO_DATA_OUTPUT_SIZE)
       {
          memcpy (outputdata, data, size);
 
@@ -186,6 +192,22 @@ int app_data_set_output_data (
          led_state = (outputdata[0] & 0x80) > 0;
          app_handle_data_led_state (led_state);
 
+         return 0;
+      }
+   }
+   else if (submodule_id == APP_GSDML_SUBMOD_ID_DIGITAL_OUT)
+   {
+      if (size == APP_GSDML_DO8_IO_DATA_OUTPUT_SIZE)
+      {
+         memcpy (outputdata, data, size);
+         //APP_LOG_DEV_INFO("Will change DO State to %hhu\n",outputdata[0]);
+         pShmT9Plc->IOOut.t9do[0] = outputdata[0];
+         // if(pShmT9Plc->IOOut.t9do[0] == 0xFFFF){
+         //    pShmT9Plc->IOOut.t9do[0] = 0x0;
+         // }
+         // else{
+         //    pShmT9Plc->IOOut.t9do[0] = 0xFFFF;
+         // }
          return 0;
       }
    }
@@ -217,8 +239,18 @@ int app_data_write_parameter (
    const uint8_t * data,
    uint16_t length)
 {
-   const app_gsdml_param_t * par_cfg;
+   APP_LOG_DEV_INFO (
+      "PLC write request  gsd parameter. "
+      "Submodule id: %u Index: %u Slot Nmbr: %hu, Subslot Nmbr: %hu\n",
 
+      (unsigned)submodule_id,
+      (unsigned)index,
+      slot_nbr,
+      subslot_nbr
+      );
+   logBuffer(data,length);
+   const app_gsdml_param_t * par_cfg;
+   // TODO:HF Burada GSD parametlerinin yazımını ayarla
    par_cfg = app_gsdml_get_parameter_cfg (submodule_id, index);
    if (par_cfg == NULL)
    {
@@ -255,6 +287,8 @@ int app_data_write_parameter (
    }
 
    APP_LOG_DEBUG ("  Writing parameter \"%s\"\n", par_cfg->name);
+   APP_LOG_DEV_INFO ("  Writing parameter \"%s\"\n", par_cfg->name);
+
    app_log_print_bytes (APP_LOG_LEVEL_DEBUG, data, length);
 
    return 0;
@@ -293,6 +327,8 @@ int app_data_read_parameter (
    }
 
    APP_LOG_DEBUG ("  Reading \"%s\"\n", par_cfg->name);
+   APP_LOG_DEV_INFO ("  Reading \"%s\"\n", par_cfg->name);
+
    if (index == APP_GSDML_PARAMETER_1_IDX)
    {
       *data = (uint8_t *)&app_param_1;

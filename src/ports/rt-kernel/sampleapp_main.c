@@ -136,7 +136,7 @@ int main (void)
 
    strcpy (app_args.eth_interfaces, APP_DEFAULT_ETHERNET_INTERFACE);
    strcpy (app_args.station_name, APP_GSDML_DEFAULT_STATION_NAME);
-   app_log_set_log_level (APP_LOG_LEVEL);
+   app_log_set_log_level (APP_LOG_LEVEL_INFO);
 
    APP_LOG_INFO ("\n** Starting P-Net sample application " PNET_VERSION
                  " **\n");

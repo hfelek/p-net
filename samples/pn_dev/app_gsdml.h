@@ -36,7 +36,8 @@ extern "C" {
 #endif
 
 #include <pnet_api.h>
-
+#include "src/device_parameters.h"
+#include "src/device_description.h"
 #define APP_GSDML_API 0
 
 #define APP_GSDML_DEFAULT_STATION_NAME "rt-labs-dev"
@@ -77,10 +78,10 @@ extern "C" {
    (PNET_SUPPORTED_IM1 | PNET_SUPPORTED_IM2 | PNET_SUPPORTED_IM3)
 
 /* GSDML tag: OrderNumber */
-#define APP_GSDML_ORDER_ID "12345 Abcdefghijk"
+#define APP_GSDML_ORDER_ID "T9PAC PNet"
 
 /* GSDML tag: ModuleInfo / Name */
-#define APP_GSDML_PRODUCT_NAME "P-Net Sample Application"
+#define APP_GSDML_PRODUCT_NAME "T9PAC Profinet Device"
 
 /* GSDML tag: MinDeviceInterval */
 #define APP_GSDML_MIN_DEVICE_INTERVAL 32 /* 1 ms */
@@ -147,7 +148,7 @@ typedef struct
 #define APP_GSDML_SUBMOD_ID_DIGITAL_IN_OUT  0x00000132
 #define APP_GSDML_SUBMOD_ID_ECHO            0x00000140
 #define APP_GSDML_INPUT_DATA_DIGITAL_SIZE   1 /* bytes */
-#define APP_GSDML_OUTPUT_DATA_DIGITAL_SIZE  1 /* bytes */
+#define APP_GSDML_DO8_IO_DATA_OUTPUT_SIZE  sizeof(gsdm_t9_slot_do_8_out_io_data) /* bytes */
 #define APP_GSDML_INPUT_DATA_ECHO_SIZE      8 /* bytes */
 #define APP_GSDML_OUTPUT_DATA_ECHO_SIZE     APP_GSDML_INPUT_DATA_ECHO_SIZE
 #define APP_GSDML_ALARM_PAYLOAD_SIZE        1 /* bytes */
