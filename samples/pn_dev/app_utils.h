@@ -512,6 +512,10 @@ bool app_utils_subslot_is_no_io (const app_subslot_t * p_subslot);
  */
 bool app_utils_subslot_is_output (const app_subslot_t * p_subslot);
 
+
+uint8_t convertModuleID (uint32_t moduleID);
+
+
 #ifdef __cplusplus
 }
 #endif

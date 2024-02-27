@@ -29,9 +29,6 @@
 
 #include "sys/shm.h"
 
-
-
-
 /* Events handled by main task */
 #define APP_EVENT_READY_FOR_DATA BIT (0)
 #define APP_EVENT_TIMER          BIT (1)
@@ -140,18 +137,18 @@ app_data_t * app_init (const pnet_cfg_t * pnet_cfg, const app_args_t * app_args)
    uint16_t i;
 
    APP_LOG_INFO ("Init P-Net stack and sample application\n");
-   
-   if ((ShmId = shmget(1984, 7244, IPC_CREAT | 0644)) < 0)
-	{
-		APP_LOG_DEV_INFO("shmget error\n");
-		return NULL;
-	}
 
-	if ((pShmT9Plc = (T9PLC *)shmat(ShmId, NULL, 0)) == NULL)
-	{
-		APP_LOG_DEV_INFO("shmget error\n");
-		return NULL;
-	}
+   if ((ShmId = shmget (1984, 7244, IPC_CREAT | 0644)) < 0)
+   {
+      APP_LOG_DEV_INFO ("shmget error\n");
+      return NULL;
+   }
+
+   if ((pShmT9Plc = (T9PLC *)shmat (ShmId, NULL, 0)) == NULL)
+   {
+      APP_LOG_DEV_INFO ("shmget error\n");
+      return NULL;
+   }
 
    app = &app_state;
 
@@ -606,7 +603,7 @@ static int app_signal_led_ind (pnet_t * net, void * arg, bool led_state)
 {
    APP_LOG_INFO ("Profinet signal LED indication. New state: %u\n", led_state);
 
-   app_set_led (APP_PROFINET_SIGNAL_LED_ID, led_state);
+   // app_set_led (APP_PROFINET_SIGNAL_LED_ID, led_state);
    return 0;
 }
 
@@ -633,6 +630,8 @@ static int app_exp_module_ind (
          PNET_MAX_SLOTS);
       return -1;
    }
+
+   // Check whether there is module in specified order
 
    module_config = app_gsdml_get_module_cfg (module_ident);
    if (module_config == NULL)
@@ -800,7 +799,20 @@ static int app_exp_submodule_ind (
       data_cfg.data_dir,
       data_cfg.insize,
       data_cfg.outsize);
+   APP_LOG_DEV_INFO ("APP_INFO\n");
 
+   if(module_id != 1)
+   {
+      if (pShmT9Plc->DeviceConfig.ModulesTypes[slot-1] != convertModuleID (module_id))
+      {
+         APP_LOG_DEV_INFO("-----------------Slot Number---------------:%u \n",(uint16_t)slot);
+         APP_LOG_DEV_INFO("-----------------Module ID---------------:%u \n",module_id);
+         APP_LOG_DEV_INFO("-----------------Slot ID---------------:%u \n",(uint8_t)pShmT9Plc->DeviceConfig.ModulesTypes[slot-1] );
+
+         APP_LOG_DEV_INFO ("Wrong slot info\n");
+         return -1;
+      }
+   }
    if (ret == 0)
    {
       (void)app_utils_plug_submodule (
@@ -866,10 +878,8 @@ static int app_new_data_status_ind (
       (data_status & BIT (PNET_DATA_STATUS_BIT_IGNORE))
          ? "Ignore data status"
          : "Evaluate data status");
-   APP_LOG_DEV_INFO("Herexd\n");
    if (is_running == false || is_valid == false)
    {
-      APP_LOG_DEV_INFO("Herecd\n");
       app_set_outputs_default_value();
    }
 
@@ -983,7 +993,7 @@ static void app_plug_dap (app_data_t * app, uint16_t number_of_ports)
       PNET_MOD_DAP_IDENT,
       PNET_SUBMOD_DAP_INTERFACE_1_IDENT,
       &cfg_dap_data);
-
+   APP_LOG_DEV_INFO ("Here\n");
    app_exp_submodule_ind (
       app->net,
       app,
@@ -1047,6 +1057,7 @@ static void app_plug_dap (app_data_t * app, uint16_t number_of_ports)
  */
 static void app_cyclic_data_callback (app_subslot_t * subslot, void * tag)
 {
+   // Burada uyarı işlemleri yapılmalı
    app_data_t * app = (app_data_t *)tag;
    uint8_t indata_iops = PNET_IOXS_BAD;
    uint8_t indata_iocs = PNET_IOXS_BAD;
@@ -1055,9 +1066,9 @@ static void app_cyclic_data_callback (app_subslot_t * subslot, void * tag)
    bool outdata_updated;
    uint16_t outdata_length;
    uint8_t outdata_iops;
-   uint8_t outdata_buf[20]; /* Todo: Remove temporary buffer */
+   uint8_t outdata_buf[50]; /* Todo: Remove temporary buffer */
    // APP_LOG_DEV_INFO("Cyclic Call\n");
-   //APP_LOG_DEV_INFO("Here\n");
+   // APP_LOG_DEV_INFO("Here\n");
    if (app == NULL)
    {
       APP_LOG_ERROR ("Application tag not set in subslot?\n");
@@ -1105,7 +1116,6 @@ static void app_cyclic_data_callback (app_subslot_t * subslot, void * tag)
       }
       else
       {
-         APP_LOG_DEV_INFO("outdata_iops == PNET_IOXS_GOOD\n");
          app_set_outputs_default_value();
       }
    }
@@ -1325,7 +1335,7 @@ static void app_handle_demo_pnet_api (app_data_t * app)
          p_subslot = &app->main_api.slots[slot].subslots[subslot_ix];
          if (
             app_utils_subslot_is_input (p_subslot) &&
-            (p_subslot->submodule_id == APP_GSDML_SUBMOD_ID_DIGITAL_IN ||
+            (p_subslot->submodule_id == APP_GSDML_SUBMOD_ID_DI8N ||
              p_subslot->submodule_id == APP_GSDML_SUBMOD_ID_DIGITAL_IN_OUT))
          {
             found_inputsubslot = true;

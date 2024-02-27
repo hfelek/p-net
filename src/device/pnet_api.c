@@ -333,6 +333,7 @@ int pnet_plug_submodule (
    uint16_t length_input,
    uint16_t length_output)
 {
+   // return -1;
    return pf_cmdev_plug_submodule (
       net,
       api,
@@ -449,7 +450,6 @@ int pnet_set_provider_state (pnet_t * net, bool run)
          }
       }
    }
-
    return ret;
 }
 

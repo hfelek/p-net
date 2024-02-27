@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "./src/config.h"
 
 extern PT9PLC pShmT9Plc;
 
@@ -36,7 +37,10 @@ extern PT9PLC pShmT9Plc;
  * Todo: Data is always in pnio data format. Add conversion to uint32_t.
  */
 static uint32_t app_param_1 = 0; /* Network endianness */
-static uint32_t app_param_2 = 0; /* Network endianness */
+static uint32_t app_param_2[sizeof (gsdm_t9_slot_do_8_config_data)] = {
+   0}; /* Network
+          endianness
+        */
 
 /* Parameter data for echo submodules
  * The stored value is shared between all echo submodules in this example.
@@ -47,9 +51,8 @@ static uint32_t app_param_echo_gain = 1; /* Network endianness */
 
 /* Digital submodule process data
  * The stored value is shared between all digital submodules in this example. */
-static uint8_t inputdata[APP_GSDML_INPUT_DATA_DIGITAL_SIZE] = {0};
+static uint8_t inputdata[APP_GSDML_DI8_IO_DATA_INPUT_SIZE] = {0};
 static uint8_t outputdata[APP_GSDML_DO8_IO_DATA_OUTPUT_SIZE] = {0};
-static uint8_t counter = 0;
 
 /* Network endianness */
 static uint8_t echo_inputdata[APP_GSDML_INPUT_DATA_ECHO_SIZE] = {0};
@@ -111,23 +114,14 @@ uint8_t * app_data_get_input_data (
    }
 
    if (
-      submodule_id == APP_GSDML_SUBMOD_ID_DIGITAL_IN ||
+      submodule_id == APP_GSDML_SUBMOD_ID_DI8N ||
       submodule_id == APP_GSDML_SUBMOD_ID_DIGITAL_IN_OUT)
    {
-      /* Prepare digital input data
-       * Lowest 7 bits: Counter    Most significant bit: Button
-       */
-      inputdata[0] = counter++;
-      if (button_pressed)
-      {
-         inputdata[0] |= 0x80;
-      }
-      else
-      {
-         inputdata[0] &= 0x7F;
-      }
+      gsdm_t9_slot_di_8_in_io_data dataCard;
+      dataCard.di_status = pShmT9Plc->IOIn.t9di[1];
+      inputdata[0] = dataCard.di_status;
 
-      *size = APP_GSDML_INPUT_DATA_DIGITAL_SIZE;
+      *size = APP_GSDML_DI8_IO_DATA_INPUT_SIZE;
       *iops = PNET_IOXS_GOOD;
       return inputdata;
    }
@@ -171,6 +165,7 @@ int app_data_set_output_data (
 {
    bool led_state;
    // APP_LOG_DEV_INFO ("app_data_set_output_data: ");
+   // APP_LOG_DEV_INFO("sizeof(app_param_2): %u \n",sizeof(app_param_2));
    // APP_LOG_DEV_INFO (
    //    "slot number: %hu, subslot_nbr: %hu,submodule_id: %u,data:",
    //    slot_nbr,
@@ -195,19 +190,50 @@ int app_data_set_output_data (
          return 0;
       }
    }
-   else if (submodule_id == APP_GSDML_SUBMOD_ID_DIGITAL_OUT)
+   else if (submodule_id == APP_GSDML_SUBMOD_ID_DO8P)
    {
+
       if (size == APP_GSDML_DO8_IO_DATA_OUTPUT_SIZE)
       {
+         gsdm_t9_slot_do_8_out_io_data dataCard;
          memcpy (outputdata, data, size);
-         //APP_LOG_DEV_INFO("Will change DO State to %hhu\n",outputdata[0]);
-         pShmT9Plc->IOOut.t9do[0] = outputdata[0];
-         // if(pShmT9Plc->IOOut.t9do[0] == 0xFFFF){
-         //    pShmT9Plc->IOOut.t9do[0] = 0x0;
-         // }
-         // else{
-         //    pShmT9Plc->IOOut.t9do[0] = 0xFFFF;
-         // }
+         // logBuffer (&outputdata, sizeof (gsdm_t9_slot_do_8_out_io_data));
+         memcpy (&dataCard, outputdata, size);
+         convertEndiannessUint16 (
+            (uint16_t *)&dataCard.pwm_config[0],
+            MAX_NUMBER_OF_DO_PWM_CHANNEL);
+         uint32_t var1 = 0x01234567;
+         uint16_t var2 = 0x0123;
+
+         convertEndiannessUint32 (&var1, 1);
+         convertEndiannessUint16 (&var2, 1);
+
+         pShmT9Plc->IOOut.t9do[0] = dataCard.do_status;
+
+         for (int channelNumber = 0;
+              channelNumber < MAX_NUMBER_OF_DO_PWM_CHANNEL;
+              channelNumber++)
+         {
+            if ((pShmT9Plc->IOOut.t9doconf[0].mode >> channelNumber & 1))
+            {
+               pShmT9Plc->IOOut.t9doconf[0].pwm[channelNumber].frequency =
+                  dataCard.pwm_config[channelNumber].duty_frequency;
+            }
+            else
+            {
+               if (dataCard.pwm_config[channelNumber].duty_frequency > 100)
+               {
+                  return -1;
+                  pShmT9Plc->IOOut.t9doconf[0].pwm[channelNumber].duty = 100;
+               }
+               else
+               {
+                  pShmT9Plc->IOOut.t9doconf[0].pwm[channelNumber].duty =
+                     dataCard.pwm_config[channelNumber].duty_frequency;
+               }
+            }
+         }
+
          return 0;
       }
    }
@@ -246,9 +272,8 @@ int app_data_write_parameter (
       (unsigned)submodule_id,
       (unsigned)index,
       slot_nbr,
-      subslot_nbr
-      );
-   logBuffer(data,length);
+      subslot_nbr);
+   // logBuffer (data, length);
    const app_gsdml_param_t * par_cfg;
    // TODO:HF Burada GSD parametlerinin yazımını ayarla
    par_cfg = app_gsdml_get_parameter_cfg (submodule_id, index);
@@ -272,6 +297,7 @@ int app_data_write_parameter (
          par_cfg->length);
       return -1;
    }
+   APP_LOG_DEV_INFO ("INDEXXXXXXXXXXXXXXXXXXX %u\n", index);
 
    if (index == APP_GSDML_PARAMETER_1_IDX)
    {
@@ -279,7 +305,23 @@ int app_data_write_parameter (
    }
    else if (index == APP_GSDML_PARAMETER_2_IDX)
    {
+
       memcpy (&app_param_2, data, length);
+      gsdm_t9_slot_do_8_config_data dummy;
+      memcpy (&dummy, data, length);
+
+      uint8_t data_shm_mode = 0;
+      uint8_t data_shm_activation = 0;
+
+      for (int i = 0; i < length; i++)
+      {
+         data_shm_activation += (dummy.activation[i] & 0x01) << i;
+         data_shm_mode += (dummy.pwm_mode[i] & 0x01) << i;
+      }
+      APP_LOG_DEV_INFO ("mode: %hhu\n", data_shm_mode);
+      APP_LOG_DEV_INFO ("activation: %hhu\n", data_shm_activation);
+      pShmT9Plc->IOOut.t9doconf[0].activation = data_shm_activation;
+      pShmT9Plc->IOOut.t9doconf[0].mode = data_shm_mode;
    }
    else if (index == APP_GSDML_PARAMETER_ECHO_IDX)
    {

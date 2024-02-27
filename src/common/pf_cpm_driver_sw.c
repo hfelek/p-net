@@ -29,7 +29,7 @@
 
 #include <inttypes.h>
 #include <string.h>
-
+#include "../../../samples/pn_dev/app_log.h"
 /**
  * @internal
  * The control_interval timer has expired.

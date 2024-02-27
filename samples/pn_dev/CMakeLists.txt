@@ -14,6 +14,7 @@ target_include_directories(pn_dev
   PRIVATE
   ${PROFINET_SOURCE_DIR}/src
   ${PROFINET_BINARY_DIR}/src
+  
   )
 
 target_link_libraries (pn_dev PUBLIC profinet)

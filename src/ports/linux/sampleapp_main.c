@@ -390,7 +390,7 @@ static int app_pnet_cfg_init_storage (
 int main (int argc, char * argv[])
 {
    int ret;
-   int32_t app_log_level = APP_LOG_LEVEL_FATAL;
+   int32_t app_log_level = APP_LOG_LEVEL_DEBUG;
    pnet_cfg_t pnet_cfg = {0};
    app_data_t * sample_app = NULL;
    app_utils_netif_namelist_t netif_name_list;

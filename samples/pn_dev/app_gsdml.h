@@ -96,11 +96,12 @@ extern "C" {
 #define APP_GSDML_LOGBOOK_ENTRY_DETAIL 0xFEE1DEAD /* Manufacturer specific */
 
 #define APP_GSDML_PARAMETER_1_IDX    123
-#define APP_GSDML_PARAMETER_2_IDX    124
+#define APP_GSDML_PARAMETER_2_IDX    128
 #define APP_GSDML_PARAMETER_ECHO_IDX 125
 
 /* Use same size for all parameters in example */
 #define APP_GSDML_PARAMETER_LENGTH 4
+#define APP_GSDML_PARAMETER_DO8_LENGTH 16
 
 #define APP_GSDML_DEFAULT_MAUTYPE 0x10 /* Copper 100 Mbit/s Full duplex */
 
@@ -139,16 +140,17 @@ typedef struct
    uint16_t length;
 } app_gsdml_param_t;
 
-#define APP_GSDML_MOD_ID_8_0_DIGITAL_IN     0x00000030
-#define APP_GSDML_MOD_ID_0_8_DIGITAL_OUT    0x00000031
-#define APP_GSDML_MOD_ID_8_8_DIGITAL_IN_OUT 0x00000032
-#define APP_GSDML_MOD_ID_ECHO               0x00000040
-#define APP_GSDML_SUBMOD_ID_DIGITAL_IN      0x00000130
-#define APP_GSDML_SUBMOD_ID_DIGITAL_OUT     0x00000131
-#define APP_GSDML_SUBMOD_ID_DIGITAL_IN_OUT  0x00000132
-#define APP_GSDML_SUBMOD_ID_ECHO            0x00000140
-#define APP_GSDML_INPUT_DATA_DIGITAL_SIZE   1 /* bytes */
-#define APP_GSDML_DO8_IO_DATA_OUTPUT_SIZE  sizeof(gsdm_t9_slot_do_8_out_io_data) /* bytes */
+#define APP_GSDML_MOD_ID_DI8N                0x00000030
+#define APP_GSDML_MOD_ID_DO8P                0x00000031
+#define APP_GSDML_MOD_ID_8_8_DIGITAL_IN_OUT  0x00000032
+#define APP_GSDML_MOD_ID_ECHO                0x00000040
+#define APP_GSDML_SUBMOD_ID_DI8N             0x00000132  //DI8N
+#define APP_GSDML_SUBMOD_ID_DO8P             0x00000131  //DO8P
+#define APP_GSDML_SUBMOD_ID_DIGITAL_IN_OUT   0x00000130
+#define APP_GSDML_SUBMOD_ID_ECHO             0x00000140
+#define APP_GSDML_DO8_IO_DATA_OUTPUT_SIZE    sizeof(gsdm_t9_slot_do_8_out_io_data) /* bytes */
+#define APP_GSDML_DI8_IO_DATA_INPUT_SIZE     sizeof(gsdm_t9_slot_di_8_in_io_data) /* bytes */
+
 #define APP_GSDML_INPUT_DATA_ECHO_SIZE      8 /* bytes */
 #define APP_GSDML_OUTPUT_DATA_ECHO_SIZE     APP_GSDML_INPUT_DATA_ECHO_SIZE
 #define APP_GSDML_ALARM_PAYLOAD_SIZE        1 /* bytes */
