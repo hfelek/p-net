@@ -95,13 +95,19 @@ extern "C" {
 #define APP_GSDML_LOGBOOK_ERROR_CODE_2 0x00       /* Manufacturer specific */
 #define APP_GSDML_LOGBOOK_ENTRY_DETAIL 0xFEE1DEAD /* Manufacturer specific */
 
-#define APP_GSDML_PARAMETER_1_IDX    123
-#define APP_GSDML_PARAMETER_2_IDX    128
-#define APP_GSDML_PARAMETER_ECHO_IDX 125
+#define APP_GSDML_PARAMETER_1_IDX        123
+#define APP_GSDML_PARAMETER_2_IDX        128
+#define APP_GSDML_PARAMETER_DO16_IDX     129
+#define APP_GSDML_PARAMETER_AO8_IDX      140
+#define APP_GSDML_PARAMETER_AO4_IDX      141
+
 
 /* Use same size for all parameters in example */
 #define APP_GSDML_PARAMETER_LENGTH 4
-#define APP_GSDML_PARAMETER_DO8_LENGTH 16
+#define APP_GSDML_PARAMETER_DO8_LENGTH sizeof(gsdm_t9_slot_do_8_config_data)
+#define APP_GSDML_PARAMETER_DO16_LENGTH sizeof(gsdm_t9_slot_do_16_config_data)
+#define APP_GSDML_PARAMETER_AO8_LENGTH sizeof(gsdm_t9_slot_ao_8_config_data)
+#define APP_GSDML_PARAMETER_AO4_LENGTH sizeof(gsdm_t9_slot_ao_4_config_data)
 
 #define APP_GSDML_DEFAULT_MAUTYPE 0x10 /* Copper 100 Mbit/s Full duplex */
 
@@ -140,16 +146,58 @@ typedef struct
    uint16_t length;
 } app_gsdml_param_t;
 
-#define APP_GSDML_MOD_ID_DI8N                0x00000030
+#define APP_GSDML_MOD_ID_DI8N                 0x00000030
+#define APP_GSDML_MOD_ID_DI8P                 0x0000001E
+
+#define APP_GSDML_MOD_ID_DI16P                0x0000010F
+#define APP_GSDML_MOD_ID_DI16N                0x00000102
+
+
+
 #define APP_GSDML_MOD_ID_DO8P                0x00000031
-#define APP_GSDML_MOD_ID_8_8_DIGITAL_IN_OUT  0x00000032
-#define APP_GSDML_MOD_ID_ECHO                0x00000040
+#define APP_GSDML_MOD_ID_DO8N                0x000000110
+#define APP_GSDML_MOD_ID_DO8R                0x000000111
+
+#define APP_GSDML_MOD_ID_DO16P               0x000000106
+#define APP_GSDML_MOD_ID_DO16N               0x000000112
+#define APP_GSDML_MOD_ID_DO16R               0x000000113
+
+#define APP_GSDML_MOD_ID_AO8                 0x00000010A
+#define APP_GSDML_MOD_ID_AO4                 0x000000109
+
+
+
 #define APP_GSDML_SUBMOD_ID_DI8N             0x00000132  //DI8N
+#define APP_GSDML_SUBMOD_ID_DI8P             0x00000135  //DI8P
+
+#define APP_GSDML_SUBMOD_ID_DI16N            0x00000136  //DI16N
+#define APP_GSDML_SUBMOD_ID_DI16P            0x00000137  //DI16P
+
 #define APP_GSDML_SUBMOD_ID_DO8P             0x00000131  //DO8P
-#define APP_GSDML_SUBMOD_ID_DIGITAL_IN_OUT   0x00000130
-#define APP_GSDML_SUBMOD_ID_ECHO             0x00000140
-#define APP_GSDML_DO8_IO_DATA_OUTPUT_SIZE    sizeof(gsdm_t9_slot_do_8_out_io_data) /* bytes */
-#define APP_GSDML_DI8_IO_DATA_INPUT_SIZE     sizeof(gsdm_t9_slot_di_8_in_io_data) /* bytes */
+#define APP_GSDML_SUBMOD_ID_DO8R             0x00000134  //DO8R
+#define APP_GSDML_SUBMOD_ID_DO8N             0x00000133  //DO8N
+
+#define APP_GSDML_SUBMOD_ID_DO16P            0x00000138  //DO16P
+#define APP_GSDML_SUBMOD_ID_DO16R            0x00000139  //DO16R
+#define APP_GSDML_SUBMOD_ID_DO16N            0x00000140  //DO16N
+
+#define APP_GSDML_SUBMOD_ID_AO8              0x00000141  //AO8
+#define APP_GSDML_SUBMOD_ID_AO4              0x00000142  //AO4
+
+
+
+
+#define APP_GSDML_DO8_IO_DATA_OUTPUT_SIZE     sizeof(gsdm_t9_slot_do_8_out_io_data) /* bytes */
+#define APP_GSDML_DI8_IO_DATA_INPUT_SIZE      sizeof(gsdm_t9_slot_di_8_in_io_data) /* bytes */
+
+#define APP_GSDML_DO16_IO_DATA_OUTPUT_SIZE    sizeof(gsdm_t9_slot_do_16_out_io_data) /* bytes */
+#define APP_GSDML_DI16_IO_DATA_INPUT_SIZE     sizeof(gsdm_t9_slot_di_16_in_io_data) /* bytes */
+
+#define APP_GSDML_AO8_IO_DATA_INPUT_SIZE      sizeof(gsdm_t9_slot_ao_8_in_io_data) /* bytes */
+#define APP_GSDML_AO8_IO_DATA_OUTPUT_SIZE     sizeof(gsdm_t9_slot_ao_8_out_io_data) /* bytes */
+
+#define APP_GSDML_AO4_IO_DATA_INPUT_SIZE      sizeof(gsdm_t9_slot_ao_4_in_io_data) /* bytes */
+#define APP_GSDML_AO4_IO_DATA_OUTPUT_SIZE     sizeof(gsdm_t9_slot_ao_4_out_io_data) /* bytes */
 
 #define APP_GSDML_INPUT_DATA_ECHO_SIZE      8 /* bytes */
 #define APP_GSDML_OUTPUT_DATA_ECHO_SIZE     APP_GSDML_INPUT_DATA_ECHO_SIZE

@@ -505,7 +505,7 @@ static int app_read_ind (
 
    if (result != 0)
    {
-      APP_LOG_WARNING (
+      APP_LOG_DEV_INFO (
          "Failed to read index for AREP: %u API: %u Slot: %2u Subslot: %u "
          "index %u.\n",
          arep,
@@ -656,17 +656,12 @@ static int app_exp_module_ind (
    }
 
    APP_LOG_DEBUG (
-      "  Plug module.        API: %u Slot: %2u Module ID: 0x%x \"%s\"\n",
+      "submodule API: %u Slot: %2u Module ID: 0x%x \"%s\"\n",
       api,
       slot,
       (unsigned)module_ident,
       module_name);
-   APP_LOG_DEV_INFO (
-      "  Plug module.        API: %u Slot: %2u Module ID: 0x%x \"%s\"\n",
-      api,
-      slot,
-      (unsigned)module_ident,
-      module_name);
+
    ret = pnet_plug_module (net, api, slot, module_ident);
    if (ret == 0)
    {
@@ -799,15 +794,22 @@ static int app_exp_submodule_ind (
       data_cfg.data_dir,
       data_cfg.insize,
       data_cfg.outsize);
-   APP_LOG_DEV_INFO ("APP_INFO\n");
 
-   if(module_id != 1)
+   if (module_id != 1)
    {
-      if (pShmT9Plc->DeviceConfig.ModulesTypes[slot-1] != convertModuleID (module_id))
+      if (
+         pShmT9Plc->DeviceConfig.ModulesTypes[slot - 1] !=
+         convertModuleID (module_id))
       {
-         APP_LOG_DEV_INFO("-----------------Slot Number---------------:%u \n",(uint16_t)slot);
-         APP_LOG_DEV_INFO("-----------------Module ID---------------:%u \n",module_id);
-         APP_LOG_DEV_INFO("-----------------Slot ID---------------:%u \n",(uint8_t)pShmT9Plc->DeviceConfig.ModulesTypes[slot-1] );
+         APP_LOG_DEV_INFO (
+            "-----------------Slot Number---------------:%u \n",
+            (uint16_t)slot);
+         APP_LOG_DEV_INFO (
+            "-----------------Module ID---------------:%u \n",
+            module_id);
+         APP_LOG_DEV_INFO (
+            "-----------------Slot ID---------------:%u \n",
+            (uint8_t)pShmT9Plc->DeviceConfig.ModulesTypes[slot - 1]);
 
          APP_LOG_DEV_INFO ("Wrong slot info\n");
          return -1;
@@ -993,7 +995,7 @@ static void app_plug_dap (app_data_t * app, uint16_t number_of_ports)
       PNET_MOD_DAP_IDENT,
       PNET_SUBMOD_DAP_INTERFACE_1_IDENT,
       &cfg_dap_data);
-   APP_LOG_DEV_INFO ("Here\n");
+      
    app_exp_submodule_ind (
       app->net,
       app,
@@ -1335,8 +1337,7 @@ static void app_handle_demo_pnet_api (app_data_t * app)
          p_subslot = &app->main_api.slots[slot].subslots[subslot_ix];
          if (
             app_utils_subslot_is_input (p_subslot) &&
-            (p_subslot->submodule_id == APP_GSDML_SUBMOD_ID_DI8N ||
-             p_subslot->submodule_id == APP_GSDML_SUBMOD_ID_DIGITAL_IN_OUT))
+            (p_subslot->submodule_id == APP_GSDML_SUBMOD_ID_DI8N ))
          {
             found_inputsubslot = true;
             break;

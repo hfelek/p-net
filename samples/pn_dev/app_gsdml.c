@@ -38,26 +38,69 @@ static const app_gsdml_module_t dap_1 = {
       PNET_SUBMOD_DAP_INTERFACE_1_PORT_4_IDENT,
       0}};
 
-static const app_gsdml_module_t module_digital_in = {
+static const app_gsdml_module_t module_DI8N = {
    .id = APP_GSDML_MOD_ID_DI8N,
    .name = "DI 8xLogicLevel",
    .submodules = {APP_GSDML_SUBMOD_ID_DI8N, 0},
 };
 
-static const app_gsdml_module_t module_digital_out = {
+static const app_gsdml_module_t module_DI8P = {
+   .id = APP_GSDML_MOD_ID_DI8P,
+   .name = "DI 8xLogicLevel",
+   .submodules = {APP_GSDML_SUBMOD_ID_DI8P, 0},
+};
+
+static const app_gsdml_module_t module_DI16N = {
+   .id = APP_GSDML_MOD_ID_DI16N,
+   .name = "DI 16xLogicLevel",
+   .submodules = {APP_GSDML_SUBMOD_ID_DI16N, 0},
+};
+
+static const app_gsdml_module_t module_DI16P = {
+   .id = APP_GSDML_MOD_ID_DI16P,
+   .name = "DI 16xLogicLevel",
+   .submodules = {APP_GSDML_SUBMOD_ID_DI16P, 0},
+};
+
+static const app_gsdml_module_t module_DO8P = {
    .id = APP_GSDML_MOD_ID_DO8P,
    .name = "DO 8xLogicLevel",
    .submodules = {APP_GSDML_SUBMOD_ID_DO8P, 0}};
 
-static const app_gsdml_module_t module_digital_in_out = {
-   .id = APP_GSDML_MOD_ID_8_8_DIGITAL_IN_OUT,
-   .name = "DIO 8xLogicLevel",
-   .submodules = {APP_GSDML_SUBMOD_ID_DIGITAL_IN_OUT, 0}};
+static const app_gsdml_module_t module_DO8N = {
+   .id = APP_GSDML_MOD_ID_DO8N,
+   .name = "DO 8xLogicLevel",
+   .submodules = {APP_GSDML_SUBMOD_ID_DO8N, 0}};
 
-static const app_gsdml_module_t module_echo = {
-   .id = APP_GSDML_MOD_ID_ECHO,
-   .name = "Echo module",
-   .submodules = {APP_GSDML_SUBMOD_ID_ECHO, 0}};
+static const app_gsdml_module_t module_DO8R = {
+   .id = APP_GSDML_MOD_ID_DO8R,
+   .name = "DO 8xLogicLevel",
+   .submodules = {APP_GSDML_SUBMOD_ID_DO8R, 0}};
+
+static const app_gsdml_module_t module_DO16P = {
+   .id = APP_GSDML_MOD_ID_DO16P,
+   .name = "DO 16xLogicLevel",
+   .submodules = {APP_GSDML_SUBMOD_ID_DO16P, 0}};
+
+static const app_gsdml_module_t module_DO16N = {
+   .id = APP_GSDML_MOD_ID_DO16N,
+   .name = "DO 16xLogicLevel",
+   .submodules = {APP_GSDML_SUBMOD_ID_DO16N, 0}};
+
+static const app_gsdml_module_t module_DO16R = {
+   .id = APP_GSDML_MOD_ID_DO16R,
+   .name = "DO 16xLogicLevel",
+   .submodules = {APP_GSDML_SUBMOD_ID_DO16R, 0}};
+
+static const app_gsdml_module_t module_AO8 = {
+   .id = APP_GSDML_MOD_ID_AO8,
+   .name = "Analog Outputx8",
+   .submodules = {APP_GSDML_SUBMOD_ID_AO8, 0}};
+
+static const app_gsdml_module_t module_AO4 = {
+   .id = APP_GSDML_MOD_ID_AO4,
+   .name = "Analog Outputx4",
+   .submodules = {APP_GSDML_SUBMOD_ID_AO4, 0}};
 
 /******************* Supported submodules ************************/
 
@@ -115,49 +158,132 @@ static const app_gsdml_submodule_t dap_port_4 = {
    .outsize = 0,
    .parameters = {0}};
 
-static const app_gsdml_submodule_t submod_digital_in = {
+static const app_gsdml_submodule_t submodule_DI8N = {
    .id = APP_GSDML_SUBMOD_ID_DI8N,
-   .name = "Digital Input",
+   .name = "Module DI8N",
    .api = APP_GSDML_API,
    .data_dir = PNET_DIR_INPUT,
    .insize = APP_GSDML_DI8_IO_DATA_INPUT_SIZE,
    .outsize = 0,
    .parameters = {0}};
 
-static const app_gsdml_submodule_t submod_digital_out = {
+static const app_gsdml_submodule_t submodule_DI8P = {
+   .id = APP_GSDML_SUBMOD_ID_DI8P,
+   .name = "Module DI8P",
+   .api = APP_GSDML_API,
+   .data_dir = PNET_DIR_INPUT,
+   .insize = APP_GSDML_DI8_IO_DATA_INPUT_SIZE,
+   .outsize = 0,
+   .parameters = {0}};
+
+static const app_gsdml_submodule_t submodule_DI16N = {
+   .id = APP_GSDML_SUBMOD_ID_DI16N,
+   .name = "Module DI16N",
+   .api = APP_GSDML_API,
+   .data_dir = PNET_DIR_INPUT,
+   .insize = APP_GSDML_DI16_IO_DATA_INPUT_SIZE,
+   .outsize = 0,
+   .parameters = {0}};
+
+static const app_gsdml_submodule_t submodule_DI16P = {
+   .id = APP_GSDML_SUBMOD_ID_DI16P,
+   .name = "Module DI16P",
+   .api = APP_GSDML_API,
+   .data_dir = PNET_DIR_INPUT,
+   .insize = APP_GSDML_DI16_IO_DATA_INPUT_SIZE,
+   .outsize = 0,
+   .parameters = {0}};
+
+static const app_gsdml_submodule_t submodule_DO8P = {
    .id = APP_GSDML_SUBMOD_ID_DO8P,
-   .name = "Digital Output",
+   .name = "Module DO8P",
+   .api = APP_GSDML_API,
+   .data_dir = PNET_DIR_OUTPUT,
+   .insize = 0,
+   .outsize = APP_GSDML_DO8_IO_DATA_OUTPUT_SIZE,
+   .parameters = {APP_GSDML_PARAMETER_2_IDX}};
+
+static const app_gsdml_submodule_t submodule_DO8N = {
+   .id = APP_GSDML_SUBMOD_ID_DO8N,
+   .name = "Module DO8N",
    .api = APP_GSDML_API,
    .data_dir = PNET_DIR_OUTPUT,
    .insize = 0,
    .outsize = APP_GSDML_DO8_IO_DATA_OUTPUT_SIZE,
    .parameters = {128}};
 
-static const app_gsdml_submodule_t submod_digital_inout = {
-   .id = APP_GSDML_SUBMOD_ID_DIGITAL_IN_OUT,
-   .name = "Digital Input/Output",
+static const app_gsdml_submodule_t submodule_DO8R = {
+   .id = APP_GSDML_SUBMOD_ID_DO8R,
+   .name = "Module DO8R",
    .api = APP_GSDML_API,
-   .data_dir = PNET_DIR_IO,
-   .insize = APP_GSDML_DI8_IO_DATA_INPUT_SIZE,
+   .data_dir = PNET_DIR_OUTPUT,
+   .insize = 0,
    .outsize = APP_GSDML_DO8_IO_DATA_OUTPUT_SIZE,
-   .parameters = {APP_GSDML_PARAMETER_1_IDX, APP_GSDML_PARAMETER_2_IDX, 0}};
+   .parameters = {128}};
 
-static const app_gsdml_submodule_t submod_echo = {
-   .id = APP_GSDML_SUBMOD_ID_ECHO,
-   .name = "Echo submodule",
+static const app_gsdml_submodule_t submodule_DO16R = {
+   .id = APP_GSDML_SUBMOD_ID_DO16R,
+   .name = "Module DO16R",
+   .api = APP_GSDML_API,
+   .data_dir = PNET_DIR_OUTPUT,
+   .insize = 0,
+   .outsize = APP_GSDML_DO16_IO_DATA_OUTPUT_SIZE,
+   .parameters = {128}};
+
+static const app_gsdml_submodule_t submodule_DO16N = {
+   .id = APP_GSDML_SUBMOD_ID_DO16N,
+   .name = "Module DO16N",
+   .api = APP_GSDML_API,
+   .data_dir = PNET_DIR_OUTPUT,
+   .insize = 0,
+   .outsize = APP_GSDML_DO16_IO_DATA_OUTPUT_SIZE,
+   .parameters = {128}};
+
+static const app_gsdml_submodule_t submodule_DO16P = {
+   .id = APP_GSDML_SUBMOD_ID_DO16P,
+   .name = "Module DO16P",
+   .api = APP_GSDML_API,
+   .data_dir = PNET_DIR_OUTPUT,
+   .insize = 0,
+   .outsize = APP_GSDML_DO16_IO_DATA_OUTPUT_SIZE,
+   .parameters = {APP_GSDML_PARAMETER_DO16_IDX}};
+
+static const app_gsdml_submodule_t submodule_AO8 = {
+   .id = APP_GSDML_SUBMOD_ID_AO8,
+   .name = "Module AO8",
    .api = APP_GSDML_API,
    .data_dir = PNET_DIR_IO,
-   .insize = APP_GSDML_INPUT_DATA_ECHO_SIZE,
-   .outsize = APP_GSDML_OUTPUT_DATA_ECHO_SIZE,
-   .parameters = {APP_GSDML_PARAMETER_ECHO_IDX, 0}};
+   .insize = APP_GSDML_AO8_IO_DATA_INPUT_SIZE,
+   .outsize = APP_GSDML_AO8_IO_DATA_OUTPUT_SIZE,
+   .parameters = {APP_GSDML_PARAMETER_AO8_IDX}};
+
+static const app_gsdml_submodule_t submodule_AO4 = {
+   .id = APP_GSDML_SUBMOD_ID_AO4,
+   .name = "Module AO4",
+   .api = APP_GSDML_API,
+   .data_dir = PNET_DIR_IO,
+   .insize = APP_GSDML_AO4_IO_DATA_INPUT_SIZE,
+   .outsize = APP_GSDML_AO4_IO_DATA_OUTPUT_SIZE,
+   .parameters = {APP_GSDML_PARAMETER_AO4_IDX}};
 
 /** List of supported modules */
 static const app_gsdml_module_t * app_gsdml_modules[] = {
    &dap_1,
-   &module_digital_in,
-   &module_digital_out,
-   &module_digital_in_out,
-   &module_echo};
+   &module_DI8N,
+   &module_DI8P,
+   &module_DI16N,
+   &module_DI16P,
+
+   &module_DO8P,
+   &module_DO8R,
+   &module_DO8N,
+   &module_DO16P,
+   &module_DO16R,
+   &module_DO16N,
+   &module_AO8,
+   &module_AO4,
+
+};
 
 /** List of supported submodules */
 static const app_gsdml_submodule_t * app_gsdml_submodules[] = {
@@ -168,11 +294,21 @@ static const app_gsdml_submodule_t * app_gsdml_submodules[] = {
    &dap_port_3,
    &dap_port_4,
 
-   &submod_digital_in,
-   &submod_digital_out,
-   &submod_digital_inout,
+   &submodule_DI8N,
+   &submodule_DI8P,
+   &submodule_DI16N,
+   &submodule_DI16P,
 
-   &submod_echo,
+   &submodule_DO8P,
+   &submodule_DO8R,
+   &submodule_DO8N,
+   &submodule_DO16P,
+   &submodule_DO16R,
+   &submodule_DO16N,
+
+   &submodule_AO8,
+   &submodule_AO4,
+
 };
 
 /* List of supported parameters.
@@ -193,10 +329,22 @@ static app_gsdml_param_t app_gsdml_parameters[] = {
       .length = APP_GSDML_PARAMETER_DO8_LENGTH,
    },
    {
-      .index = APP_GSDML_PARAMETER_ECHO_IDX,
-      .name = "Echo gain setting",
-      .length = APP_GSDML_PARAMETER_LENGTH,
-   }};
+      .index = APP_GSDML_PARAMETER_DO16_IDX,
+      .name = "DO16 Configuration",
+      .length = APP_GSDML_PARAMETER_DO16_LENGTH,
+   },
+   {
+      .index = APP_GSDML_PARAMETER_AO8_IDX,
+      .name = "AO8 Configuration",
+      .length = APP_GSDML_PARAMETER_AO8_LENGTH,
+   },
+   {
+      .index = APP_GSDML_PARAMETER_AO4_IDX,
+      .name = "AO4 Configuration",
+      .length = APP_GSDML_PARAMETER_AO4_LENGTH,
+   },
+
+};
 
 const app_gsdml_module_t * app_gsdml_get_module_cfg (uint32_t id)
 {
@@ -236,7 +384,7 @@ const app_gsdml_param_t * app_gsdml_get_parameter_cfg (
 
    if (submodule_cfg == NULL)
    {
-      APP_LOG_DEV_INFO("Unsupported submodule id\n");
+      APP_LOG_DEV_INFO ("Unsupported submodule id\n");
       /* Unsupported submodule id */
       return NULL;
    }
@@ -253,7 +401,9 @@ const app_gsdml_param_t * app_gsdml_get_parameter_cfg (
 
             if (app_gsdml_parameters[j].index == index)
             {
-               APP_LOG_DEV_INFO("Number: %hu, Index: %u, app_gsdml_parameters[j].index: %u \n",j,index,app_gsdml_parameters[j].index);
+               // APP_LOG_DEV_INFO("Number: %hu, Index: %u,
+               // app_gsdml_parameters[j].index: %u
+               // \n",j,index,app_gsdml_parameters[j].index);
 
                return &app_gsdml_parameters[j];
             }

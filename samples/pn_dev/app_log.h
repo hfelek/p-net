@@ -37,7 +37,7 @@ extern "C" {
 #define APP_LOG_LEVEL_ERROR   0x03
 #define APP_LOG_LEVEL_FATAL   0x04
 
-#define APP_DEFAULT_LOG_LEVEL APP_LOG_LEVEL_INFO
+#define APP_DEFAULT_LOG_LEVEL APP_LOG_LEVEL_DEBUG
 
 #define APP_LOG(level, ...) app_log (level, __VA_ARGS__)
 #define APP_LOG_DEV(level, ...) app_log_dev (level, __VA_ARGS__)

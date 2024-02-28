@@ -300,7 +300,7 @@ int my_exp_module_ind (
    {
       /* For now support any module in any slot */
       TEST_TRACE (
-         "  Plug module.    API: %" PRIu32 " Slot: %" PRIu16 " Module ID: "
+         "Plug module.    API: %" PRIu32 " Slot: %" PRIu16 " Module ID: "
          "%" PRIu32 " Index in list of supported modules: %" PRIu16 "\n",
          api,
          slot,

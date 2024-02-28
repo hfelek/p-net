@@ -695,7 +695,7 @@ int app_utils_plug_module (
    uint32_t id,
    const char * name)
 {
-   APP_LOG_DEV_INFO ("app_utils_plug_module\n");
+   // APP_LOG_DEV_INFO ("app_utils_plug_module\n");
    if (slot_nbr >= PNET_MAX_SLOTS)
    {
       return -1;
@@ -733,9 +733,7 @@ app_subslot_t * app_utils_plug_submodule (
 {
    uint16_t subslot_ix;
 
-   APP_LOG_DEV_INFO ("APP_INFO_1\n");
 
-   APP_LOG_DEV_INFO ("app_utils_plug_submodule\n");
 
    if (slot_nbr >= PNET_MAX_SLOTS || p_api == NULL || p_data_cfg == NULL)
    {
@@ -904,7 +902,7 @@ void convertEndiannessUint16 (uint16_t * array, size_t size)
 
 uint8_t convertModuleID (uint32_t moduleID)
 {
-
+   printf("Module check : %u\n", moduleID);
    switch (moduleID)
    {
    case APP_GSDML_MOD_ID_DI8N:
@@ -914,8 +912,25 @@ uint8_t convertModuleID (uint32_t moduleID)
    case APP_GSDML_MOD_ID_DO8P:
       return SLOT_TYPE_DO8P;
       break;
+
+   case APP_GSDML_MOD_ID_DO16P:
+      return SLOT_TYPE_DO16P;
+      break;
+   
+   case APP_GSDML_MOD_ID_DI16N:
+      return SLOT_TYPE_DI16N;
+      break;
+   
+   case APP_GSDML_MOD_ID_AO8:
+      return SLOT_TYPE_AO8;
+      break;
+
+   case APP_GSDML_MOD_ID_AO4:
+      return SLOT_TYPE_AO4;
+      break;
+
    default:
-      return 0;
+      return SLOT_TYPE_DO8P;
       break;
    }
 }

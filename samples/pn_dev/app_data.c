@@ -37,61 +37,30 @@ extern PT9PLC pShmT9Plc;
  * Todo: Data is always in pnio data format. Add conversion to uint32_t.
  */
 static uint32_t app_param_1 = 0; /* Network endianness */
-static uint32_t app_param_2[sizeof (gsdm_t9_slot_do_8_config_data)] = {
-   0}; /* Network
-          endianness
-        */
-
-/* Parameter data for echo submodules
- * The stored value is shared between all echo submodules in this example.
- *
- * Todo: Data is always in pnio data format. Add conversion to uint32_t.
- */
-static uint32_t app_param_echo_gain = 1; /* Network endianness */
+static uint32_t app_param_2[sizeof (gsdm_t9_slot_do_8_config_data)] = {0};
+static uint32_t app_param_DO16_config[sizeof (gsdm_t9_slot_do_16_config_data)] =
+   {0};
+static uint32_t app_param_AO8_config[sizeof (gsdm_t9_slot_ao_8_config_data)] = {
+   0};
+static uint32_t app_param_AO4_config[sizeof (gsdm_t9_slot_ao_4_config_data)] = {
+   0};
 
 /* Digital submodule process data
  * The stored value is shared between all digital submodules in this example. */
-static uint8_t inputdata[APP_GSDML_DI8_IO_DATA_INPUT_SIZE] = {0};
-static uint8_t outputdata[APP_GSDML_DO8_IO_DATA_OUTPUT_SIZE] = {0};
 
-/* Network endianness */
-static uint8_t echo_inputdata[APP_GSDML_INPUT_DATA_ECHO_SIZE] = {0};
-static uint8_t echo_outputdata[APP_GSDML_OUTPUT_DATA_ECHO_SIZE] = {0};
+typedef union
+{
+   uint8_t bytes[1440]; // PF_MAX_UDP_PAYLOAD_SIZE
+   uint16_t two_bytes[1440 / 2];
+   uint32_t four_bytes[1440 / 4];
+} u_data;
+
+static u_data inputdata = {0};
+static u_data outputdata = {0};
 
 CC_PACKED_BEGIN
-typedef struct CC_PACKED app_echo_data
-{
-   /* Network endianness.
-      Used as a float, but we model it as a 4-byte integer to easily
-      do endianness conversion */
-   uint32_t echo_float_bytes;
 
-   /* Network endianness */
-   uint32_t echo_int;
-} app_echo_data_t;
 CC_PACKED_END
-CC_STATIC_ASSERT (sizeof (app_echo_data_t) == APP_GSDML_INPUT_DATA_ECHO_SIZE);
-CC_STATIC_ASSERT (sizeof (app_echo_data_t) == APP_GSDML_OUTPUT_DATA_ECHO_SIZE);
-
-/**
- * Set LED state.
- *
- * Compares new state with previous state, to minimize system calls.
- *
- * Uses the hardware specific app_set_led() function.
- *
- * @param led_state        In:    New LED state
- */
-static void app_handle_data_led_state (bool led_state)
-{
-   static bool previous_led_state = false;
-
-   if (led_state != previous_led_state)
-   {
-      app_set_led (APP_DATA_LED_ID, led_state);
-   }
-   previous_led_state = led_state;
-}
 
 uint8_t * app_data_get_input_data (
    uint16_t slot_nbr,
@@ -101,55 +70,53 @@ uint8_t * app_data_get_input_data (
    uint16_t * size,
    uint8_t * iops)
 {
-   float inputfloat;
-   float outputfloat;
-   uint32_t hostorder_inputfloat_bytes;
-   uint32_t hostorder_outputfloat_bytes;
-   app_echo_data_t * p_echo_inputdata = (app_echo_data_t *)&echo_inputdata;
-   app_echo_data_t * p_echo_outputdata = (app_echo_data_t *)&echo_outputdata;
 
+   const uint8_t busSlot_nbr = slot_nbr - 1;
    if (size == NULL || iops == NULL)
    {
+      APP_LOG_DEV_INFO ("here2 : slot number %u\n", slot_nbr);
       return NULL;
    }
 
    if (
-      submodule_id == APP_GSDML_SUBMOD_ID_DI8N ||
-      submodule_id == APP_GSDML_SUBMOD_ID_DIGITAL_IN_OUT)
+      (submodule_id == APP_GSDML_SUBMOD_ID_DI8N) ||
+      (submodule_id == APP_GSDML_SUBMOD_ID_DI8P))
    {
       gsdm_t9_slot_di_8_in_io_data dataCard;
-      dataCard.di_status = pShmT9Plc->IOIn.t9di[1];
-      inputdata[0] = dataCard.di_status;
+      dataCard.di_status = pShmT9Plc->IOIn.t9di[busSlot_nbr];
+      inputdata.bytes[0] = dataCard.di_status;
 
       *size = APP_GSDML_DI8_IO_DATA_INPUT_SIZE;
       *iops = PNET_IOXS_GOOD;
-      return inputdata;
+      return inputdata.bytes;
    }
 
-   if (submodule_id == APP_GSDML_SUBMOD_ID_ECHO)
+   if (
+      (submodule_id == APP_GSDML_SUBMOD_ID_DI16N) ||
+      (submodule_id == APP_GSDML_SUBMOD_ID_DI16P))
    {
-      /* Calculate echodata input (to the PLC)
-       * by multiplying the output (from the PLC) with a gain factor
-       */
+      gsdm_t9_slot_di_16_in_io_data dataCard;
+      dataCard.di_status = pShmT9Plc->IOIn.t9di[busSlot_nbr];
+      convertEndiannessUint16 (&dataCard.di_status, 2);
 
-      /* Integer */
-      p_echo_inputdata->echo_int = CC_TO_BE32 (
-         CC_FROM_BE32 (p_echo_outputdata->echo_int) *
-         CC_FROM_BE32 (app_param_echo_gain));
+      inputdata.two_bytes[0] = dataCard.di_status;
 
-      /* Float */
-      /* Use memcopy to avoid strict-aliasing rule warnings */
-      hostorder_outputfloat_bytes =
-         CC_FROM_BE32 (p_echo_outputdata->echo_float_bytes);
-      memcpy (&outputfloat, &hostorder_outputfloat_bytes, sizeof (outputfloat));
-      inputfloat = outputfloat * CC_FROM_BE32 (app_param_echo_gain);
-      memcpy (&hostorder_inputfloat_bytes, &inputfloat, sizeof (outputfloat));
-      p_echo_inputdata->echo_float_bytes =
-         CC_TO_BE32 (hostorder_inputfloat_bytes);
-
-      *size = APP_GSDML_INPUT_DATA_ECHO_SIZE;
+      *size = APP_GSDML_DI16_IO_DATA_INPUT_SIZE;
       *iops = PNET_IOXS_GOOD;
-      return echo_inputdata;
+      return inputdata.bytes;
+   }
+
+   if (
+      (submodule_id == APP_GSDML_SUBMOD_ID_AO8) ||
+      (submodule_id == APP_GSDML_SUBMOD_ID_AO4))
+   {
+      gsdm_t9_slot_ao_8_in_io_data dataCard;
+      memset (&dataCard, 0, sizeof (gsdm_t9_slot_ao_8_in_io_data));
+      memcpy (inputdata.bytes, &dataCard, sizeof (gsdm_t9_slot_ao_8_in_io_data));
+
+      *size = APP_GSDML_AO8_IO_DATA_INPUT_SIZE;
+      *iops = PNET_IOXS_GOOD;
+      return inputdata.bytes;
    }
 
    /* Automated RT Tester scenario 2 - unsupported (sub)module */
@@ -163,60 +130,39 @@ int app_data_set_output_data (
    uint8_t * data,
    uint16_t size)
 {
-   bool led_state;
-   // APP_LOG_DEV_INFO ("app_data_set_output_data: ");
-   // APP_LOG_DEV_INFO("sizeof(app_param_2): %u \n",sizeof(app_param_2));
-   // APP_LOG_DEV_INFO (
-   //    "slot number: %hu, subslot_nbr: %hu,submodule_id: %u,data:",
-   //    slot_nbr,
-   //    subslot_nbr,
-   //    submodule_id);
-   // logBuffer (data, size);
    if (data == NULL)
    {
       return -1;
    }
-
-   if (submodule_id == APP_GSDML_SUBMOD_ID_DIGITAL_IN_OUT)
+   const uint8_t busSlot_nbr = slot_nbr - 1;
+   if (
+      submodule_id == APP_GSDML_SUBMOD_ID_DO8P ||
+      submodule_id == APP_GSDML_SUBMOD_ID_DO8N ||
+      submodule_id == APP_GSDML_SUBMOD_ID_DO8R)
    {
       if (size == APP_GSDML_DO8_IO_DATA_OUTPUT_SIZE)
       {
-         memcpy (outputdata, data, size);
 
-         /* Most significant bit: LED */
-         led_state = (outputdata[0] & 0x80) > 0;
-         app_handle_data_led_state (led_state);
-
-         return 0;
-      }
-   }
-   else if (submodule_id == APP_GSDML_SUBMOD_ID_DO8P)
-   {
-
-      if (size == APP_GSDML_DO8_IO_DATA_OUTPUT_SIZE)
-      {
          gsdm_t9_slot_do_8_out_io_data dataCard;
-         memcpy (outputdata, data, size);
+         memcpy (outputdata.bytes, data, size);
          // logBuffer (&outputdata, sizeof (gsdm_t9_slot_do_8_out_io_data));
-         memcpy (&dataCard, outputdata, size);
+         memcpy (&dataCard, outputdata.bytes, size);
          convertEndiannessUint16 (
             (uint16_t *)&dataCard.pwm_config[0],
             MAX_NUMBER_OF_DO_PWM_CHANNEL);
-         uint32_t var1 = 0x01234567;
-         uint16_t var2 = 0x0123;
 
-         convertEndiannessUint32 (&var1, 1);
-         convertEndiannessUint16 (&var2, 1);
-
-         pShmT9Plc->IOOut.t9do[0] = dataCard.do_status;
+         pShmT9Plc->IOOut.t9do[busSlot_nbr] = dataCard.do_status;
 
          for (int channelNumber = 0;
               channelNumber < MAX_NUMBER_OF_DO_PWM_CHANNEL;
               channelNumber++)
          {
-            if ((pShmT9Plc->IOOut.t9doconf[0].mode >> channelNumber & 1))
+            if ((pShmT9Plc->IOOut.t9doconf[busSlot_nbr].mode >> channelNumber &
+                 1))
             {
-               pShmT9Plc->IOOut.t9doconf[0].pwm[channelNumber].frequency =
+               pShmT9Plc->IOOut.t9doconf[busSlot_nbr]
+                  .pwm[channelNumber]
+                  .frequency =
                   dataCard.pwm_config[channelNumber].duty_frequency;
             }
             else
@@ -224,12 +170,15 @@ int app_data_set_output_data (
                if (dataCard.pwm_config[channelNumber].duty_frequency > 100)
                {
                   return -1;
-                  pShmT9Plc->IOOut.t9doconf[0].pwm[channelNumber].duty = 100;
+                  pShmT9Plc->IOOut.t9doconf[busSlot_nbr]
+                     .pwm[channelNumber]
+                     .duty = 100;
                }
                else
                {
-                  pShmT9Plc->IOOut.t9doconf[0].pwm[channelNumber].duty =
-                     dataCard.pwm_config[channelNumber].duty_frequency;
+                  pShmT9Plc->IOOut.t9doconf[busSlot_nbr]
+                     .pwm[channelNumber]
+                     .duty = dataCard.pwm_config[channelNumber].duty_frequency;
                }
             }
          }
@@ -237,12 +186,111 @@ int app_data_set_output_data (
          return 0;
       }
    }
-   else if (submodule_id == APP_GSDML_SUBMOD_ID_ECHO)
-   {
-      if (size == APP_GSDML_OUTPUT_DATA_ECHO_SIZE)
-      {
-         memcpy (echo_outputdata, data, size);
 
+   else if (
+      submodule_id == APP_GSDML_SUBMOD_ID_DO16P ||
+      submodule_id == APP_GSDML_SUBMOD_ID_DO16N ||
+      submodule_id == APP_GSDML_SUBMOD_ID_DO16R)
+   {
+      if (size == APP_GSDML_DO16_IO_DATA_OUTPUT_SIZE)
+      {
+
+         gsdm_t9_slot_do_16_out_io_data dataCard;
+         memcpy (outputdata.bytes, data, size);
+         memcpy (&dataCard, outputdata.bytes, size);
+
+         convertEndiannessUint16 (
+            (uint16_t *)&dataCard.pwm_config[0],
+            MAX_NUMBER_OF_DO_PWM_CHANNEL);
+         convertEndiannessUint16 (&dataCard.do_status, 2);
+         pShmT9Plc->IOOut.t9do[busSlot_nbr] = dataCard.do_status;
+
+         for (int channelNumber = 0;
+              channelNumber < MAX_NUMBER_OF_DO_PWM_CHANNEL;
+              channelNumber++)
+         {
+            if ((pShmT9Plc->IOOut.t9doconf[busSlot_nbr].mode >> channelNumber &
+                 1))
+            {
+               pShmT9Plc->IOOut.t9doconf[busSlot_nbr]
+                  .pwm[channelNumber]
+                  .frequency =
+                  dataCard.pwm_config[channelNumber].duty_frequency;
+            }
+            else
+            {
+               if (dataCard.pwm_config[channelNumber].duty_frequency > 100)
+               {
+                  return -1;
+                  pShmT9Plc->IOOut.t9doconf[busSlot_nbr]
+                     .pwm[channelNumber]
+                     .duty = 100;
+               }
+               else
+               {
+                  pShmT9Plc->IOOut.t9doconf[busSlot_nbr]
+                     .pwm[channelNumber]
+                     .duty = dataCard.pwm_config[channelNumber].duty_frequency;
+               }
+            }
+         }
+
+         return 0;
+      }
+   }
+   else if (submodule_id == APP_GSDML_SUBMOD_ID_AO8)
+   {
+      if (size == APP_GSDML_AO8_IO_DATA_OUTPUT_SIZE)
+      {
+
+         gsdm_t9_slot_ao_8_out_io_data dataCard;
+         memcpy (outputdata.bytes, data, size);
+         memcpy (&dataCard, outputdata.bytes, size);
+
+         convertEndiannessUint32 (
+            (uint32_t *)dataCard.ao_values,
+            GSDM_AO8_CHANNEL_NUMBER);
+
+         //   for(int i =0 ; i < 8 ; i++){
+         //       APP_LOG_DEV_INFO("Channel: %d , Mode: %hhu,  Value %.2f\n",
+         //       i+1,
+         //       pShmT9Plc->IOOut.t9aioconf[busSlot_nbr].channel_function[i],
+         //       dataCard.ao_values[i]);
+         //    }
+
+         memcpy (
+            pShmT9Plc->IOOut.t9ao[busSlot_nbr],
+            dataCard.ao_values,
+            sizeof (dataCard.ao_values));
+         return 0;
+      }
+   }
+   else if (submodule_id == APP_GSDML_SUBMOD_ID_AO4)
+   {
+      if (size == APP_GSDML_AO4_IO_DATA_OUTPUT_SIZE)
+      {
+
+         gsdm_t9_slot_ao_4_out_io_data dataCard;
+         memcpy (outputdata.bytes, data, size);
+         memcpy (&dataCard, outputdata.bytes, size);
+
+         convertEndiannessUint32 (
+            (uint32_t *)dataCard.ao_values,
+            GSDM_AO4_CHANNEL_NUMBER);
+
+         // for (int i = 0; i < 4; i++)
+         // {
+         //    APP_LOG_DEV_INFO (
+         //       "Channel: %d , Mode: %hhu,  Value %.2f\n",
+         //       i + 1,
+         //       pShmT9Plc->IOOut.t9aioconf[busSlot_nbr].channel_function[i],
+         //       dataCard.ao_values[i]);
+         // }
+
+         memcpy (
+            pShmT9Plc->IOOut.t9ao[busSlot_nbr],
+            dataCard.ao_values,
+            sizeof (dataCard.ao_values));
          return 0;
       }
    }
@@ -252,8 +300,7 @@ int app_data_set_output_data (
 
 int app_data_set_default_outputs (void)
 {
-   outputdata[0] = APP_DATA_DEFAULT_OUTPUT_DATA;
-   app_handle_data_led_state (false);
+   outputdata.bytes[0] = APP_DATA_DEFAULT_OUTPUT_DATA;
    return 0;
 }
 
@@ -265,6 +312,8 @@ int app_data_write_parameter (
    const uint8_t * data,
    uint16_t length)
 {
+   uint8_t busSlot_nbr = slot_nbr - 1;
+
    APP_LOG_DEV_INFO (
       "PLC write request  gsd parameter. "
       "Submodule id: %u Index: %u Slot Nmbr: %hu, Subslot Nmbr: %hu\n",
@@ -275,7 +324,7 @@ int app_data_write_parameter (
       subslot_nbr);
    // logBuffer (data, length);
    const app_gsdml_param_t * par_cfg;
-   // TODO:HF Burada GSD parametlerinin yazımını ayarla
+
    par_cfg = app_gsdml_get_parameter_cfg (submodule_id, index);
    if (par_cfg == NULL)
    {
@@ -297,7 +346,6 @@ int app_data_write_parameter (
          par_cfg->length);
       return -1;
    }
-   APP_LOG_DEV_INFO ("INDEXXXXXXXXXXXXXXXXXXX %u\n", index);
 
    if (index == APP_GSDML_PARAMETER_1_IDX)
    {
@@ -320,16 +368,61 @@ int app_data_write_parameter (
       }
       APP_LOG_DEV_INFO ("mode: %hhu\n", data_shm_mode);
       APP_LOG_DEV_INFO ("activation: %hhu\n", data_shm_activation);
-      pShmT9Plc->IOOut.t9doconf[0].activation = data_shm_activation;
-      pShmT9Plc->IOOut.t9doconf[0].mode = data_shm_mode;
+      pShmT9Plc->IOOut.t9doconf[busSlot_nbr].activation = data_shm_activation;
+      pShmT9Plc->IOOut.t9doconf[busSlot_nbr].mode = data_shm_mode;
    }
-   else if (index == APP_GSDML_PARAMETER_ECHO_IDX)
+
+   else if (index == APP_GSDML_PARAMETER_DO16_IDX)
    {
-      memcpy (&app_param_echo_gain, data, length);
+      memcpy (&app_param_DO16_config, data, length);
+      gsdm_t9_slot_do_16_config_data cfg_data;
+      memcpy (&cfg_data, data, length);
+
+      uint16_t data_shm_mode = 0;
+      uint16_t data_shm_activation = 0;
+
+      for (int i = 0; i < length; i++)
+      {
+         data_shm_activation += (cfg_data.activation[i] & 0x01) << i;
+         data_shm_mode += (cfg_data.pwm_mode[i] & 0x01) << i;
+      }
+
+      pShmT9Plc->IOOut.t9doconf[busSlot_nbr].activation = data_shm_activation;
+      pShmT9Plc->IOOut.t9doconf[busSlot_nbr].mode = data_shm_mode;
+   }
+   else if (index == APP_GSDML_PARAMETER_AO8_IDX)
+   {
+      memcpy (&app_param_AO8_config, data, length);
+      gsdm_t9_slot_ao_8_config_data cfg_data;
+      memcpy (&cfg_data, data, length);
+      uint8_t freqeuncy_suppresion = 0;
+      for (int i = 0; i < GSDM_AO8_CHANNEL_NUMBER; i++)
+      {
+
+         pShmT9Plc->IOOut.t9aioconf[busSlot_nbr].channel_function[i] =
+            cfg_data.operation_mode[i];
+         freqeuncy_suppresion += (cfg_data.frequency_suppresion[i] & 0x01) << i;
+      }
+      pShmT9Plc->IOOut.t9aioconf[busSlot_nbr].channel_rejection_50_60_Hz =
+         freqeuncy_suppresion;
+   }
+   else if (index == APP_GSDML_PARAMETER_AO4_IDX)
+   {
+      memcpy (&app_param_AO4_config, data, length);
+      gsdm_t9_slot_ao_4_config_data cfg_data;
+      memcpy (&cfg_data, data, length);
+      uint8_t freqeuncy_suppresion = 0;
+      for (int i = 0; i < GSDM_AO4_CHANNEL_NUMBER; i++)
+      {
+         pShmT9Plc->IOOut.t9aioconf[busSlot_nbr].channel_function[i] =
+            cfg_data.operation_mode[i];
+         freqeuncy_suppresion += (cfg_data.frequency_suppresion[i] & 0x01) << i;
+      }
+      pShmT9Plc->IOOut.t9aioconf[busSlot_nbr].channel_rejection_50_60_Hz =
+         freqeuncy_suppresion;
    }
 
    APP_LOG_DEBUG ("  Writing parameter \"%s\"\n", par_cfg->name);
-   APP_LOG_DEV_INFO ("  Writing parameter \"%s\"\n", par_cfg->name);
 
    app_log_print_bytes (APP_LOG_LEVEL_DEBUG, data, length);
 
@@ -346,6 +439,15 @@ int app_data_read_parameter (
 {
    const app_gsdml_param_t * par_cfg;
 
+   // TODO: Uygulama büyük ihtimalle burada patlar. uint32_t'lik değerden normal
+   // structa çek.
+
+   APP_LOG_DEV_INFO (
+      "PLC read request slot number: %hu,  submodule/parameter. "
+      "Submodule id: %u Index: %u\n",
+      slot_nbr,
+      (unsigned)submodule_id,
+      (unsigned)index);
    par_cfg = app_gsdml_get_parameter_cfg (submodule_id, index);
    if (par_cfg == NULL)
    {
@@ -368,8 +470,8 @@ int app_data_read_parameter (
       return -1;
    }
 
-   APP_LOG_DEBUG ("  Reading \"%s\"\n", par_cfg->name);
-   APP_LOG_DEV_INFO ("  Reading \"%s\"\n", par_cfg->name);
+   APP_LOG_DEBUG ("Reading \"%s\"\n", par_cfg->name);
+   APP_LOG_DEV_INFO ("Reading \"%s\"\n", par_cfg->name);
 
    if (index == APP_GSDML_PARAMETER_1_IDX)
    {
@@ -381,10 +483,16 @@ int app_data_read_parameter (
       *data = (uint8_t *)&app_param_2;
       *length = sizeof (app_param_2);
    }
-   else if (index == APP_GSDML_PARAMETER_ECHO_IDX)
+   else if (index == APP_GSDML_PARAMETER_DO16_IDX)
    {
-      *data = (uint8_t *)&app_param_echo_gain;
-      *length = sizeof (app_param_echo_gain);
+      *data = (uint8_t *)&app_param_DO16_config;
+      *length = sizeof (app_param_DO16_config);
+   }
+   else if (index == APP_GSDML_PARAMETER_AO4_IDX)
+   {
+      APP_LOG_DEV_INFO("jhaskjadsh\n");
+      *data = (uint8_t *)&app_param_AO4_config;
+      *length = 8;
    }
 
    app_log_print_bytes (APP_LOG_LEVEL_DEBUG, *data, *length);
