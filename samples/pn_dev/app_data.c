@@ -42,8 +42,16 @@ static uint32_t app_param_DO16_config[sizeof (gsdm_t9_slot_do_16_config_data)] =
    {0};
 static uint32_t app_param_AO8_config[sizeof (gsdm_t9_slot_ao_8_config_data)] = {
    0};
+static uint32_t app_param_AI8_config[sizeof (gsdm_t9_slot_ai_8_config_data)] = {
+   0};
+static uint32_t app_param_AIO8_config[sizeof (gsdm_t9_slot_aio_8_config_data)] =
+   {0};
+static uint32_t app_param_AI4_config[sizeof (gsdm_t9_slot_ai_4_config_data)] = {
+   0};
 static uint32_t app_param_AO4_config[sizeof (gsdm_t9_slot_ao_4_config_data)] = {
    0};
+static uint32_t app_param_AIO4_config[sizeof (gsdm_t9_slot_aio_4_config_data)] =
+   {0};
 
 /* Digital submodule process data
  * The stored value is shared between all digital submodules in this example. */
@@ -116,6 +124,82 @@ uint8_t * app_data_get_input_data (
 
       *size = APP_GSDML_AO8_IO_DATA_INPUT_SIZE;
       *iops = PNET_IOXS_GOOD;
+      return inputdata.bytes;
+   }
+
+   if ((submodule_id == APP_GSDML_SUBMOD_ID_AI8))
+   {
+      gsdm_t9_slot_ai_8_in_io_data dataCard;
+
+      memset (&dataCard, 0, sizeof (dataCard.diagnostics));
+      memcpy (
+         dataCard.ao_values,
+         pShmT9Plc->IOIn.t9ai[busSlot_nbr],
+         sizeof (dataCard.ao_values));
+      convertEndiannessUint32 (
+         (uint32_t *)dataCard.ao_values,
+         GSDM_AI8_CHANNEL_NUMBER);
+      memcpy (inputdata.bytes, &dataCard, sizeof (gsdm_t9_slot_ai_8_in_io_data));
+
+      *size = APP_GSDML_AI8_IO_DATA_INPUT_SIZE;
+      *iops = PNET_IOXS_GOOD;
+      return inputdata.bytes;
+   }
+
+   if ((submodule_id == APP_GSDML_SUBMOD_ID_AIO8))
+   {
+      gsdm_t9_slot_aio_8_in_io_data dataCard;
+
+      memset (&dataCard, 0, sizeof (dataCard.diagnostics));
+      memcpy (
+         dataCard.ao_values,
+         pShmT9Plc->IOIn.t9ai[busSlot_nbr],
+         sizeof (dataCard.ao_values));
+      convertEndiannessUint32 (
+         (uint32_t *)dataCard.ao_values,
+         GSDM_AIO8_CHANNEL_NUMBER);
+      memcpy (inputdata.bytes, &dataCard, sizeof (gsdm_t9_slot_ai_8_in_io_data));
+
+      *size = APP_GSDML_AIO8_IO_DATA_INPUT_SIZE;
+      *iops = PNET_IOXS_GOOD;
+      return inputdata.bytes;
+   }
+
+   if ((submodule_id == APP_GSDML_SUBMOD_ID_AIO4))
+   {
+      gsdm_t9_slot_aio_4_in_io_data dataCard;
+
+      memset (&dataCard, 0, sizeof (dataCard.diagnostics));
+      memcpy (
+         dataCard.ao_values,
+         pShmT9Plc->IOIn.t9ai[busSlot_nbr],
+         sizeof (dataCard.ao_values));
+      convertEndiannessUint32 (
+         (uint32_t *)dataCard.ao_values,
+         GSDM_AIO4_CHANNEL_NUMBER);
+      memcpy (inputdata.bytes, &dataCard, sizeof (gsdm_t9_slot_ai_4_in_io_data));
+
+      *size = APP_GSDML_AIO4_IO_DATA_INPUT_SIZE;
+      *iops = PNET_IOXS_GOOD;
+      return inputdata.bytes;
+   }
+   if ((submodule_id == APP_GSDML_SUBMOD_ID_AI4))
+   {
+      gsdm_t9_slot_ai_4_in_io_data dataCard;
+
+      memset (&dataCard, 0, sizeof (dataCard.diagnostics));
+      memcpy (
+         dataCard.ao_values,
+         pShmT9Plc->IOIn.t9ai[busSlot_nbr],
+         sizeof (dataCard.ao_values));
+      convertEndiannessUint32 (
+         (uint32_t *)dataCard.ao_values,
+         GSDM_AI4_CHANNEL_NUMBER);
+      memcpy (inputdata.bytes, &dataCard, sizeof (gsdm_t9_slot_ai_4_in_io_data));
+
+      *size = APP_GSDML_AI4_IO_DATA_INPUT_SIZE;
+      *iops = PNET_IOXS_GOOD;
+
       return inputdata.bytes;
    }
 
@@ -250,6 +334,60 @@ int app_data_set_output_data (
          convertEndiannessUint32 (
             (uint32_t *)dataCard.ao_values,
             GSDM_AO8_CHANNEL_NUMBER);
+
+         //   for(int i =0 ; i < 8 ; i++){
+         //       APP_LOG_DEV_INFO("Channel: %d , Mode: %hhu,  Value %.2f\n",
+         //       i+1,
+         //       pShmT9Plc->IOOut.t9aioconf[busSlot_nbr].channel_function[i],
+         //       dataCard.ao_values[i]);
+         //    }
+
+         memcpy (
+            pShmT9Plc->IOOut.t9ao[busSlot_nbr],
+            dataCard.ao_values,
+            sizeof (dataCard.ao_values));
+         return 0;
+      }
+   }
+   else if (submodule_id == APP_GSDML_SUBMOD_ID_AIO8)
+   {
+      if (size == APP_GSDML_AIO8_IO_DATA_OUTPUT_SIZE)
+      {
+
+         gsdm_t9_slot_aio_8_out_io_data dataCard;
+         memcpy (outputdata.bytes, data, size);
+         memcpy (&dataCard, outputdata.bytes, size);
+
+         convertEndiannessUint32 (
+            (uint32_t *)dataCard.ao_values,
+            GSDM_AO8_CHANNEL_NUMBER);
+
+         //   for(int i =0 ; i < 8 ; i++){
+         //       APP_LOG_DEV_INFO("Channel: %d , Mode: %hhu,  Value %.2f\n",
+         //       i+1,
+         //       pShmT9Plc->IOOut.t9aioconf[busSlot_nbr].channel_function[i],
+         //       dataCard.ao_values[i]);
+         //    }
+
+         memcpy (
+            pShmT9Plc->IOOut.t9ao[busSlot_nbr],
+            dataCard.ao_values,
+            sizeof (dataCard.ao_values));
+         return 0;
+      }
+   }
+   else if (submodule_id == APP_GSDML_SUBMOD_ID_AIO4)
+   {
+      if (size == APP_GSDML_AIO4_IO_DATA_OUTPUT_SIZE)
+      {
+
+         gsdm_t9_slot_aio_4_out_io_data dataCard;
+         memcpy (outputdata.bytes, data, size);
+         memcpy (&dataCard, outputdata.bytes, size);
+
+         convertEndiannessUint32 (
+            (uint32_t *)dataCard.ao_values,
+            GSDM_AO4_CHANNEL_NUMBER);
 
          //   for(int i =0 ; i < 8 ; i++){
          //       APP_LOG_DEV_INFO("Channel: %d , Mode: %hhu,  Value %.2f\n",
@@ -406,6 +544,71 @@ int app_data_write_parameter (
       pShmT9Plc->IOOut.t9aioconf[busSlot_nbr].channel_rejection_50_60_Hz =
          freqeuncy_suppresion;
    }
+   else if (index == APP_GSDML_PARAMETER_AI8_IDX)
+   {
+      memcpy (&app_param_AI8_config, data, length);
+      gsdm_t9_slot_ai_8_config_data cfg_data;
+      memcpy (&cfg_data, data, length);
+      uint8_t freqeuncy_suppresion = 0;
+      for (int i = 0; i < GSDM_AI8_CHANNEL_NUMBER; i++)
+      {
+         pShmT9Plc->IOOut.t9aioconf[busSlot_nbr].channel_function[i] =
+            cfg_data.operation_mode[i];
+         freqeuncy_suppresion += (cfg_data.frequency_suppresion[i] & 0x01) << i;
+      }
+      pShmT9Plc->IOOut.t9aioconf[busSlot_nbr].channel_rejection_50_60_Hz =
+         freqeuncy_suppresion;
+   }
+   else if (index == APP_GSDML_PARAMETER_AIO8_IDX)
+   {
+      memcpy (&app_param_AIO8_config, data, length);
+      gsdm_t9_slot_aio_8_config_data cfg_data;
+      memcpy (&cfg_data, data, length);
+      uint8_t freqeuncy_suppresion = 0;
+      for (int i = 0; i < GSDM_AIO8_CHANNEL_NUMBER; i++)
+      {
+         pShmT9Plc->IOOut.t9aioconf[busSlot_nbr].channel_function[i] =
+            cfg_data.operation_mode[i];
+         freqeuncy_suppresion += (cfg_data.frequency_suppresion[i] & 0x01) << i;
+      }
+      pShmT9Plc->IOOut.t9aioconf[busSlot_nbr].channel_rejection_50_60_Hz =
+         freqeuncy_suppresion;
+   }
+   else if (index == APP_GSDML_PARAMETER_AIO4_IDX)
+   {
+      memcpy (&app_param_AIO4_config, data, length);
+      gsdm_t9_slot_aio_4_config_data cfg_data;
+      memcpy (&cfg_data, data, length);
+      uint8_t freqeuncy_suppresion = 0;
+      for (int i = 0; i < GSDM_AIO4_CHANNEL_NUMBER; i++)
+      {
+         pShmT9Plc->IOOut.t9aioconf[busSlot_nbr].channel_function[i] =
+            cfg_data.operation_mode[i];
+         freqeuncy_suppresion += (cfg_data.frequency_suppresion[i] & 0x01) << i;
+      }
+      pShmT9Plc->IOOut.t9aioconf[busSlot_nbr].channel_rejection_50_60_Hz =
+         freqeuncy_suppresion;
+   }
+   else if (index == APP_GSDML_PARAMETER_AI4_IDX)
+   {
+      memcpy (&app_param_AI4_config, data, length);
+
+      gsdm_t9_slot_ai_4_config_data cfg_data;
+
+      memcpy (&cfg_data, data, length);
+
+      uint8_t freqeuncy_suppresion = 0;
+
+      for (int i = 0; i < GSDM_AI4_CHANNEL_NUMBER; i++)
+      {
+         pShmT9Plc->IOOut.t9aioconf[busSlot_nbr].channel_function[i] =
+            cfg_data.operation_mode[i];
+         freqeuncy_suppresion += (cfg_data.frequency_suppresion[i] & 0x01) << i;
+      }
+
+      pShmT9Plc->IOOut.t9aioconf[busSlot_nbr].channel_rejection_50_60_Hz =
+         freqeuncy_suppresion;
+   }
    else if (index == APP_GSDML_PARAMETER_AO4_IDX)
    {
       memcpy (&app_param_AO4_config, data, length);
@@ -425,7 +628,6 @@ int app_data_write_parameter (
    APP_LOG_DEBUG ("  Writing parameter \"%s\"\n", par_cfg->name);
 
    app_log_print_bytes (APP_LOG_LEVEL_DEBUG, data, length);
-
    return 0;
 }
 
@@ -490,9 +692,13 @@ int app_data_read_parameter (
    }
    else if (index == APP_GSDML_PARAMETER_AO4_IDX)
    {
-      APP_LOG_DEV_INFO("jhaskjadsh\n");
       *data = (uint8_t *)&app_param_AO4_config;
-      *length = 8;
+      *length = sizeof (app_param_AO4_config);
+   }
+   else if (index == APP_GSDML_PARAMETER_AIO4_IDX)
+   {
+      *data = (uint8_t *)&app_param_AIO4_config;
+      *length = sizeof (app_param_AIO4_config);
    }
 
    app_log_print_bytes (APP_LOG_LEVEL_DEBUG, *data, *length);

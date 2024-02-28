@@ -779,10 +779,13 @@ static int app_exp_submodule_ind (
       data_cfg.outsize != p_exp_data->outsize)
    {
       APP_LOG_WARNING (
-         "    Warning expected  Data Dir: %s  In: %u bytes  Out: %u bytes\n",
+         "    Warning expected  Data Dir: %s  In: %u bytes  Out: %u bytes  RealIn: %u bytes  RealOut: %u bytes\n",
          app_utils_submod_dir_to_string (p_exp_data->data_dir),
          p_exp_data->insize,
-         p_exp_data->outsize);
+         p_exp_data->outsize,
+         data_cfg.insize,
+         data_cfg.outsize
+         );
    }
    ret = pnet_plug_submodule (
       net,

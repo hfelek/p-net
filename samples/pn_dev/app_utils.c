@@ -924,10 +924,28 @@ uint8_t convertModuleID (uint32_t moduleID)
    case APP_GSDML_MOD_ID_AO8:
       return SLOT_TYPE_AO8;
       break;
+   
+   case APP_GSDML_MOD_ID_AIO8:
+      return SLOT_TYPE_AIO8;
+      break;
+
+   case APP_GSDML_MOD_ID_AIO4:
+      return SLOT_TYPE_AIO4;
+      break;
+
 
    case APP_GSDML_MOD_ID_AO4:
       return SLOT_TYPE_AO4;
       break;
+   
+   case APP_GSDML_MOD_ID_AI8:
+      return SLOT_TYPE_AI8;
+      break;
+
+   case APP_GSDML_MOD_ID_AI4:
+      return SLOT_TYPE_AI4;
+      break;
+
 
    default:
       return SLOT_TYPE_DO8P;

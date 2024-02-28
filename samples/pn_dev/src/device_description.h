@@ -3,7 +3,11 @@
 #define GSDM_DO8_CHANNEL_NUMBER  8
 #define GSDM_DO16_CHANNEL_NUMBER 16
 #define GSDM_AO8_CHANNEL_NUMBER  8
+#define GSDM_AIO8_CHANNEL_NUMBER  8
+#define GSDM_AIO4_CHANNEL_NUMBER  4
 #define GSDM_AO4_CHANNEL_NUMBER  4
+#define GSDM_AI8_CHANNEL_NUMBER  8
+#define GSDM_AI4_CHANNEL_NUMBER  4
 
 // Seen from Codesys implementation, each parameter defined must have at least
 // one byte. Otherwise application doesn't build. In siemens implementation each
@@ -42,7 +46,44 @@ typedef struct _gsdm_t9_slot_ao_8_config_data_
 
 } gsdm_t9_slot_ao_8_config_data;
 
-/*AO8*/
+/*AI8*/
+typedef struct _gsdm_t9_slot_ai_8_config_data_
+{
+
+   uint8_t operation_mode[GSDM_AI8_CHANNEL_NUMBER];
+   uint8_t frequency_suppresion[GSDM_AI8_CHANNEL_NUMBER]; 
+
+} gsdm_t9_slot_ai_8_config_data;
+
+/*AIO8*/
+typedef struct _gsdm_t9_slot_aio_8_config_data_
+{
+
+   uint8_t operation_mode[GSDM_AIO8_CHANNEL_NUMBER];
+   uint8_t frequency_suppresion[GSDM_AIO8_CHANNEL_NUMBER]; 
+
+} gsdm_t9_slot_aio_8_config_data;
+
+/*AIO4*/
+typedef struct _gsdm_t9_slot_aio_4_config_data_
+{
+
+   uint8_t operation_mode[GSDM_AIO4_CHANNEL_NUMBER];
+   uint8_t frequency_suppresion[GSDM_AIO4_CHANNEL_NUMBER]; 
+
+} gsdm_t9_slot_aio_4_config_data;
+
+
+/*AI4*/
+typedef struct _gsdm_t9_slot_ai_4_config_data_
+{
+
+   uint8_t operation_mode[GSDM_AI4_CHANNEL_NUMBER];
+   uint8_t frequency_suppresion[GSDM_AI4_CHANNEL_NUMBER]; 
+
+} gsdm_t9_slot_ai_4_config_data;
+
+/*AO4*/
 typedef struct _gsdm_t9_slot_ao_4_config_data_
 {
 
@@ -128,6 +169,47 @@ typedef struct _gsdm_t9_slot_ao_4_out_io_data_
    float ao_values[GSDM_AO4_CHANNEL_NUMBER];
 
 } gsdm_t9_slot_ao_4_out_io_data;
+
+typedef struct _gsdm_t9_slot_ai_8_in_io_data_
+{
+   uint8_t diagnostics[2];
+   float ao_values[GSDM_AI8_CHANNEL_NUMBER];
+
+} gsdm_t9_slot_ai_8_in_io_data;
+
+typedef struct _gsdm_t9_slot_aio_8_in_io_data_
+{
+   uint8_t diagnostics[2];
+   float ao_values[GSDM_AIO8_CHANNEL_NUMBER];
+
+} gsdm_t9_slot_aio_8_in_io_data;
+
+typedef struct _gsdm_t9_slot_aio_8_out_io_data_
+{
+   float ao_values[GSDM_AIO8_CHANNEL_NUMBER];
+
+} gsdm_t9_slot_aio_8_out_io_data;
+
+typedef struct _gsdm_t9_slot_aio_4_in_io_data_
+{
+   uint8_t diagnostics[2];
+   float ao_values[GSDM_AIO4_CHANNEL_NUMBER];
+
+} gsdm_t9_slot_aio_4_in_io_data;
+
+typedef struct _gsdm_t9_slot_aio_4_out_io_data_
+{
+   float ao_values[GSDM_AIO4_CHANNEL_NUMBER];
+
+} gsdm_t9_slot_aio_4_out_io_data;
+
+
+typedef struct _gsdm_t9_slot_ai_4_in_io_data_
+{
+   uint8_t diagnostics[2];
+   float ao_values[GSDM_AI4_CHANNEL_NUMBER];
+
+} gsdm_t9_slot_ai_4_in_io_data;
 
 
 /*IO DATA -- END*/

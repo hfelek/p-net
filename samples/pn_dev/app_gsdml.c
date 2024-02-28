@@ -102,6 +102,26 @@ static const app_gsdml_module_t module_AO4 = {
    .name = "Analog Outputx4",
    .submodules = {APP_GSDML_SUBMOD_ID_AO4, 0}};
 
+static const app_gsdml_module_t module_AI8 = {
+   .id = APP_GSDML_MOD_ID_AI8,
+   .name = "Analog Inputx8",
+   .submodules = {APP_GSDML_SUBMOD_ID_AI8, 0}};
+
+static const app_gsdml_module_t module_AI4 = {
+   .id = APP_GSDML_MOD_ID_AI4,
+   .name = "Analog Inputx4",
+   .submodules = {APP_GSDML_SUBMOD_ID_AI4, 0}};
+
+static const app_gsdml_module_t module_AIO8 = {
+   .id = APP_GSDML_MOD_ID_AIO8,
+   .name = "Analog Input/Outputx8",
+   .submodules = {APP_GSDML_SUBMOD_ID_AIO8, 0}};
+
+static const app_gsdml_module_t module_AIO4 = {
+   .id = APP_GSDML_MOD_ID_AIO4,
+   .name = "Analog Input/Outputx4",
+   .submodules = {APP_GSDML_SUBMOD_ID_AIO4, 0}};
+
 /******************* Supported submodules ************************/
 
 static const app_gsdml_submodule_t dap_indentity_1 = {
@@ -266,6 +286,42 @@ static const app_gsdml_submodule_t submodule_AO4 = {
    .outsize = APP_GSDML_AO4_IO_DATA_OUTPUT_SIZE,
    .parameters = {APP_GSDML_PARAMETER_AO4_IDX}};
 
+static const app_gsdml_submodule_t submodule_AI8 = {
+   .id = APP_GSDML_SUBMOD_ID_AI8,
+   .name = "Module AI8",
+   .api = APP_GSDML_API,
+   .data_dir = PNET_DIR_INPUT,
+   .insize = APP_GSDML_AI8_IO_DATA_INPUT_SIZE,
+   .outsize = 0,
+   .parameters = {APP_GSDML_PARAMETER_AI8_IDX}};
+
+static const app_gsdml_submodule_t submodule_AI4 = {
+   .id = APP_GSDML_SUBMOD_ID_AI4,
+   .name = "Module AI4",
+   .api = APP_GSDML_API,
+   .data_dir = PNET_DIR_INPUT,
+   .insize = APP_GSDML_AI4_IO_DATA_INPUT_SIZE,
+   .outsize = 0,
+   .parameters = {APP_GSDML_PARAMETER_AI4_IDX}};
+
+static const app_gsdml_submodule_t submodule_AIO8 = {
+   .id = APP_GSDML_SUBMOD_ID_AIO8,
+   .name = "Module AIO8",
+   .api = APP_GSDML_API,
+   .data_dir = PNET_DIR_IO,
+   .insize = APP_GSDML_AIO8_IO_DATA_INPUT_SIZE,
+   .outsize = APP_GSDML_AIO8_IO_DATA_OUTPUT_SIZE,
+   .parameters = {APP_GSDML_PARAMETER_AIO8_IDX}};
+
+static const app_gsdml_submodule_t submodule_AIO4 = {
+   .id = APP_GSDML_SUBMOD_ID_AIO4,
+   .name = "Module AIO4",
+   .api = APP_GSDML_API,
+   .data_dir = PNET_DIR_IO,
+   .insize = APP_GSDML_AIO4_IO_DATA_INPUT_SIZE,
+   .outsize = APP_GSDML_AIO4_IO_DATA_OUTPUT_SIZE,
+   .parameters = {APP_GSDML_PARAMETER_AIO4_IDX}};
+
 /** List of supported modules */
 static const app_gsdml_module_t * app_gsdml_modules[] = {
    &dap_1,
@@ -282,32 +338,28 @@ static const app_gsdml_module_t * app_gsdml_modules[] = {
    &module_DO16N,
    &module_AO8,
    &module_AO4,
+   &module_AI8,
+   &module_AI4,
+   &module_AIO8,
+   &module_AIO4,
 
 };
 
 /** List of supported submodules */
 static const app_gsdml_submodule_t * app_gsdml_submodules[] = {
-   &dap_indentity_1,
-   &dap_interface_1,
-   &dap_port_1,
-   &dap_port_2,
-   &dap_port_3,
-   &dap_port_4,
+   &dap_indentity_1, &dap_interface_1, &dap_port_1,      &dap_port_2,
+   &dap_port_3,      &dap_port_4,
 
-   &submodule_DI8N,
-   &submodule_DI8P,
-   &submodule_DI16N,
-   &submodule_DI16P,
+   &submodule_DI8N,  &submodule_DI8P,  &submodule_DI16N, &submodule_DI16P,
 
-   &submodule_DO8P,
-   &submodule_DO8R,
-   &submodule_DO8N,
-   &submodule_DO16P,
-   &submodule_DO16R,
-   &submodule_DO16N,
+   &submodule_DO8P,  &submodule_DO8R,  &submodule_DO8N,  &submodule_DO16P,
+   &submodule_DO16R, &submodule_DO16N,
 
-   &submodule_AO8,
-   &submodule_AO4,
+   &submodule_AO8,   &submodule_AO4,
+
+   &submodule_AI8,   &submodule_AI4,
+
+   &submodule_AIO8,  &submodule_AIO4
 
 };
 
@@ -342,6 +394,26 @@ static app_gsdml_param_t app_gsdml_parameters[] = {
       .index = APP_GSDML_PARAMETER_AO4_IDX,
       .name = "AO4 Configuration",
       .length = APP_GSDML_PARAMETER_AO4_LENGTH,
+   },
+   {
+      .index = APP_GSDML_PARAMETER_AI8_IDX,
+      .name = "AI8 Configuration",
+      .length = APP_GSDML_PARAMETER_AI8_LENGTH,
+   },
+   {
+      .index = APP_GSDML_PARAMETER_AI4_IDX,
+      .name = "AI4 Configuration",
+      .length = APP_GSDML_PARAMETER_AI4_LENGTH,
+   },
+   {
+      .index = APP_GSDML_PARAMETER_AIO8_IDX,
+      .name = "AIO8 Configuration",
+      .length = APP_GSDML_PARAMETER_AIO8_LENGTH,
+   },
+   {
+      .index = APP_GSDML_PARAMETER_AIO4_IDX,
+      .name = "AIO4 Configuration",
+      .length = APP_GSDML_PARAMETER_AIO4_LENGTH,
    },
 
 };
