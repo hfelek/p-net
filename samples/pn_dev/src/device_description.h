@@ -8,12 +8,42 @@
 #define GSDM_AO4_CHANNEL_NUMBER  4
 #define GSDM_AI8_CHANNEL_NUMBER  8
 #define GSDM_AI4_CHANNEL_NUMBER  4
+#define GSDM_CNT8_CHANNEL_NUMBER  8
+#define GSDM_ENC4_CHANNEL_NUMBER  4
+#define GSDM_ENC4_CNT_CHANNEL_NUMBER  8
+
 
 // Seen from Codesys implementation, each parameter defined must have at least
 // one byte. Otherwise application doesn't build. In siemens implementation each
 // paramters has padding of 4 tho.
+
+
+enum MyEnum
+{
+   DIGITAL_INPUT_MODE,
+   COUNTER_MODE,
+   FREQUENCY_MODE,
+   ENCODER_MODE
+};
+
+
 #pragma pack(push, 1)
 /*CONFIG DATA -- START*/
+
+typedef struct _gsdm_t9_slot_cnt_8_config_data_
+{
+   uint8_t  mode[GSDM_CNT8_CHANNEL_NUMBER];
+   uint32_t counter_preset_value[GSDM_CNT8_CHANNEL_NUMBER];
+
+} gsdm_t9_slot_cnt_8_config_data;
+
+typedef struct _gsdm_t9_slot_enc_4_config_data_
+{
+   uint8_t  mode[GSDM_ENC4_CHANNEL_NUMBER];
+   uint32_t counter_preset_value[GSDM_ENC4_CNT_CHANNEL_NUMBER];
+   uint32_t encoder_preset_value[GSDM_ENC4_CHANNEL_NUMBER];
+
+} gsdm_t9_slot_enc_4_config_data;
 
 /*DO8*/
 typedef struct _gsdm_t9_slot_do_8_config_data_
@@ -144,6 +174,40 @@ typedef struct _gsdm_t9_slot_di_16_in_io_data_
    uint16_t di_status;
 
 } gsdm_t9_slot_di_16_in_io_data;
+
+typedef struct _gsdm_t9_slot_cnt_8_in_io_data_
+{
+   uint8_t di_status;
+   uint32_t counter_value[GSDM_CNT8_CHANNEL_NUMBER];
+
+} gsdm_t9_slot_cnt_8_in_io_data;
+
+typedef struct _gsdm_t9_slot_cnt_8_out_io_data_
+{
+   uint8_t cnt_reset_trigger;
+   uint8_t cnt_preset_trigger;
+
+} gsdm_t9_slot_cnt_8_out_io_data;
+
+
+typedef struct _gsdm_t9_slot_enc_4_in_io_data_
+{
+   uint8_t  di_status;
+   uint32_t counter_value[GSDM_ENC4_CNT_CHANNEL_NUMBER];
+   uint32_t encoder_value[GSDM_ENC4_CHANNEL_NUMBER];
+   uint8_t  encoder_direction;
+
+} gsdm_t9_slot_enc_4_in_io_data;
+
+typedef struct _gsdm_t9_slot_enc_4_out_io_data_
+{
+   uint8_t cnt_reset_trigger;
+   uint8_t cnt_preset_trigger;
+   uint8_t enc_reset_trigger;
+   uint8_t enc_preset_trigger;
+
+} gsdm_t9_slot_enc_4_out_io_data;
+
 
 typedef struct _gsdm_t9_slot_ao_8_in_io_data_
 {

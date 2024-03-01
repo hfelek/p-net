@@ -122,6 +122,16 @@ static const app_gsdml_module_t module_AIO4 = {
    .name = "Analog Input/Outputx4",
    .submodules = {APP_GSDML_SUBMOD_ID_AIO4, 0}};
 
+static const app_gsdml_module_t module_CNT8 = {
+   .id = APP_GSDML_MOD_ID_CNT8,
+   .name = "Counter 8",
+   .submodules = {APP_GSDML_SUBMOD_ID_CNT8, 0}};
+
+static const app_gsdml_module_t module_ENC4 = {
+   .id = APP_GSDML_MOD_ID_ENC4,
+   .name = "Encoder 4",
+   .submodules = {APP_GSDML_SUBMOD_ID_ENC4, 0}};
+
 /******************* Supported submodules ************************/
 
 static const app_gsdml_submodule_t dap_indentity_1 = {
@@ -322,6 +332,26 @@ static const app_gsdml_submodule_t submodule_AIO4 = {
    .outsize = APP_GSDML_AIO4_IO_DATA_OUTPUT_SIZE,
    .parameters = {APP_GSDML_PARAMETER_AIO4_IDX}};
 
+static const app_gsdml_submodule_t submodule_CNT8 = {
+   .id = APP_GSDML_SUBMOD_ID_CNT8,
+   .name = "Module CNT8",
+   .api = APP_GSDML_API,
+   .data_dir = PNET_DIR_IO,
+   .insize = APP_GSDML_CNT8_IO_DATA_INPUT_SIZE,
+   .outsize = APP_GSDML_CNT8_IO_DATA_OUTPUT_SIZE,
+   .parameters = {APP_GSDML_PARAMETER_CNT8_IDX}};
+
+static const app_gsdml_submodule_t submodule_ENC4 = {
+   .id = APP_GSDML_SUBMOD_ID_ENC4,
+   .name = "Module ENC4",
+   .api = APP_GSDML_API,
+   .data_dir = PNET_DIR_IO,
+   .insize = APP_GSDML_ENC4_IO_DATA_INPUT_SIZE,
+   .outsize = APP_GSDML_ENC4_IO_DATA_OUTPUT_SIZE,
+   .parameters = {APP_GSDML_PARAMETER_ENC4_IDX}};
+
+
+
 /** List of supported modules */
 static const app_gsdml_module_t * app_gsdml_modules[] = {
    &dap_1,
@@ -342,6 +372,8 @@ static const app_gsdml_module_t * app_gsdml_modules[] = {
    &module_AI4,
    &module_AIO8,
    &module_AIO4,
+   &module_CNT8,
+   &module_ENC4,
 
 };
 
@@ -353,9 +385,9 @@ static const app_gsdml_submodule_t * app_gsdml_submodules[] = {
    &submodule_DI8N,  &submodule_DI8P,  &submodule_DI16N, &submodule_DI16P,
 
    &submodule_DO8P,  &submodule_DO8R,  &submodule_DO8N,  &submodule_DO16P,
-   &submodule_DO16R, &submodule_DO16N,
+   &submodule_DO16R, &submodule_DO16N, &submodule_CNT8,
 
-   &submodule_AO8,   &submodule_AO4,
+   &submodule_AO8,   &submodule_AO4,   &submodule_ENC4,
 
    &submodule_AI8,   &submodule_AI4,
 
@@ -415,7 +447,16 @@ static app_gsdml_param_t app_gsdml_parameters[] = {
       .name = "AIO4 Configuration",
       .length = APP_GSDML_PARAMETER_AIO4_LENGTH,
    },
-
+   {
+      .index = APP_GSDML_PARAMETER_CNT8_IDX,
+      .name = "AIO4 Configuration",
+      .length = APP_GSDML_PARAMETER_CNT8_LENGTH,
+   },
+   {
+      .index = APP_GSDML_PARAMETER_ENC4_IDX,
+      .name = "ENC4 Configuration",
+      .length = APP_GSDML_PARAMETER_ENC4_LENGTH,
+   },
 };
 
 const app_gsdml_module_t * app_gsdml_get_module_cfg (uint32_t id)

@@ -946,9 +946,17 @@ uint8_t convertModuleID (uint32_t moduleID)
       return SLOT_TYPE_AI4;
       break;
 
+   case APP_GSDML_MOD_ID_CNT8:
+      return SLOT_TYPE_CNT8;
+      break;
+
+   case APP_GSDML_MOD_ID_ENC4:
+      return SLOT_TYPE_ENC4;
+      break;
+
 
    default:
-      return SLOT_TYPE_DO8P;
+      return SLOT_UNKNOWN;
       break;
    }
 }

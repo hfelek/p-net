@@ -104,6 +104,8 @@ extern "C" {
 #define APP_GSDML_PARAMETER_AI4_IDX      143
 #define APP_GSDML_PARAMETER_AIO8_IDX     144
 #define APP_GSDML_PARAMETER_AIO4_IDX     145
+#define APP_GSDML_PARAMETER_CNT8_IDX     146
+#define APP_GSDML_PARAMETER_ENC4_IDX     147
 
 
 /* Use same size for all parameters in example */
@@ -116,6 +118,8 @@ extern "C" {
 #define APP_GSDML_PARAMETER_AI4_LENGTH sizeof(gsdm_t9_slot_ai_4_config_data)
 #define APP_GSDML_PARAMETER_AIO8_LENGTH sizeof(gsdm_t9_slot_aio_8_config_data)
 #define APP_GSDML_PARAMETER_AIO4_LENGTH sizeof(gsdm_t9_slot_aio_4_config_data)
+#define APP_GSDML_PARAMETER_CNT8_LENGTH sizeof(gsdm_t9_slot_cnt_8_config_data)
+#define APP_GSDML_PARAMETER_ENC4_LENGTH sizeof(gsdm_t9_slot_enc_4_config_data)
 
 
 #define APP_GSDML_DEFAULT_MAUTYPE 0x10 /* Copper 100 Mbit/s Full duplex */
@@ -180,6 +184,9 @@ typedef struct
 #define APP_GSDML_MOD_ID_AIO8                0x00000010C
 #define APP_GSDML_MOD_ID_AIO4                0x00000010B
 
+#define APP_GSDML_MOD_ID_CNT8                0x000000104
+#define APP_GSDML_MOD_ID_ENC4                0x000000103
+
 
 #define APP_GSDML_SUBMOD_ID_DI8N             0x00000132  //DI8N
 #define APP_GSDML_SUBMOD_ID_DI8P             0x00000135  //DI8P
@@ -204,6 +211,10 @@ typedef struct
 #define APP_GSDML_SUBMOD_ID_AIO8             0x00000145  //AIO8
 #define APP_GSDML_SUBMOD_ID_AIO4             0x00000146  //AIO8
 
+#define APP_GSDML_SUBMOD_ID_CNT8             0x00000147  //CNT8
+
+#define APP_GSDML_SUBMOD_ID_ENC4             0x00000148  //ENC4
+
 
 
 #define APP_GSDML_DO8_IO_DATA_OUTPUT_SIZE     sizeof(gsdm_t9_slot_do_8_out_io_data) /* bytes */
@@ -226,6 +237,13 @@ typedef struct
 
 #define APP_GSDML_AIO4_IO_DATA_INPUT_SIZE      sizeof(gsdm_t9_slot_aio_4_in_io_data) /* bytes */
 #define APP_GSDML_AIO4_IO_DATA_OUTPUT_SIZE     sizeof(gsdm_t9_slot_aio_4_out_io_data) /* bytes */
+
+#define APP_GSDML_CNT8_IO_DATA_INPUT_SIZE      sizeof(gsdm_t9_slot_cnt_8_in_io_data) /* bytes */
+#define APP_GSDML_CNT8_IO_DATA_OUTPUT_SIZE     sizeof(gsdm_t9_slot_cnt_8_out_io_data) /* bytes */
+
+
+#define APP_GSDML_ENC4_IO_DATA_INPUT_SIZE      sizeof(gsdm_t9_slot_enc_4_in_io_data) /* bytes */
+#define APP_GSDML_ENC4_IO_DATA_OUTPUT_SIZE     sizeof(gsdm_t9_slot_enc_4_out_io_data) /* bytes */
 
 
 #define APP_GSDML_INPUT_DATA_ECHO_SIZE      8 /* bytes */

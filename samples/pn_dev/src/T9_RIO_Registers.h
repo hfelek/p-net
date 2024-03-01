@@ -208,6 +208,7 @@ typedef struct
 {
 	slot_info_registers di_slot_info;
 	uint16_t enable_counters;
+	uint16_t enable_frequency_mode;
 	uint32_t cnt_preset_regs[NUM_OF_COUNTERS];
 	uint16_t cnt_reset_flags;
 	uint16_t cnt_preset_flags;
@@ -220,7 +221,7 @@ typedef struct
 	uint32_t enc[NUM_OF_ENCODERS];
 	uint16_t enc_direction;
 
-	uint16_t reserved_1[23];
+	uint16_t reserved_1[22];
 
 	slot_info_registers do_slot_info;
 	uint16_t enable_pwm_channels;

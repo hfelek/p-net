@@ -40,6 +40,8 @@ typedef struct _t9_counter_configuration_
 	unsigned int		preset[MAX_NUMBER_OF_CNT_CHANNEL];
 	unsigned char 	   	reset_trigger;
 	unsigned char		preset_trigger;
+	unsigned char       enable_frequency_mode;
+
 }t9_counter_configuration;
 
 typedef struct _t9_encoder_configuration_

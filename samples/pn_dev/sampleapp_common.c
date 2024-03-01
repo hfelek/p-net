@@ -386,28 +386,11 @@ static int app_write_ind (
       (unsigned)idx,
       sequence_number,
       write_length);
-   APP_LOG_DEV_INFO (
-      "PLC write record indication.\n"
-      "  AREP: %u API: %u Slot: %2u Subslot: %u Index: %u Sequence: %2u "
-      "Length: %u\n",
-      arep,
-      api,
-      slot_nbr,
-      subslot_nbr,
-      (unsigned)idx,
-      sequence_number,
-      write_length);
+
    subslot = app_utils_subslot_get (&app->main_api, slot_nbr, subslot_nbr);
    if (subslot == NULL)
    {
       APP_LOG_DEV_INFO (
-         "No submodule plugged in AREP: %u API: %u Slot: %2u Subslot: %u "
-         "Index will not be written.\n",
-         arep,
-         api,
-         slot_nbr,
-         subslot_nbr);
-      APP_LOG_WARNING (
          "No submodule plugged in AREP: %u API: %u Slot: %2u Subslot: %u "
          "Index will not be written.\n",
          arep,
@@ -429,10 +412,9 @@ static int app_write_ind (
       idx,
       p_write_data,
       write_length);
-   // TODO:HF burayı -1 dönüyor!
    if (result != 0)
    {
-      APP_LOG_WARNING (
+      APP_LOG_DEV_INFO (
          "Failed to write index for AREP: %u API: %u Slot: %2u Subslot: %u "
          "index %u.\n",
          arep,
@@ -505,7 +487,7 @@ static int app_read_ind (
 
    if (result != 0)
    {
-      APP_LOG_DEV_INFO (
+      APP_LOG_WARNING (
          "Failed to read index for AREP: %u API: %u Slot: %2u Subslot: %u "
          "index %u.\n",
          arep,
@@ -603,7 +585,7 @@ static int app_signal_led_ind (pnet_t * net, void * arg, bool led_state)
 {
    APP_LOG_INFO ("Profinet signal LED indication. New state: %u\n", led_state);
 
-   // app_set_led (APP_PROFINET_SIGNAL_LED_ID, led_state);
+   app_set_led (APP_PROFINET_SIGNAL_LED_ID, led_state);
    return 0;
 }
 
@@ -631,8 +613,6 @@ static int app_exp_module_ind (
       return -1;
    }
 
-   // Check whether there is module in specified order
-
    module_config = app_gsdml_get_module_cfg (module_ident);
    if (module_config == NULL)
    {
@@ -656,7 +636,7 @@ static int app_exp_module_ind (
    }
 
    APP_LOG_DEBUG (
-      "submodule API: %u Slot: %2u Module ID: 0x%x \"%s\"\n",
+      "  Plug module.        API: %u Slot: %2u Module ID: 0x%x \"%s\"\n",
       api,
       slot,
       (unsigned)module_ident,
@@ -670,12 +650,6 @@ static int app_exp_module_ind (
          slot,
          module_ident,
          module_name);
-      APP_LOG_DEV_INFO (
-         "Plug module successfull. Ret: %u API: %u Slot: %2u Module ID: 0x%x\n",
-         ret,
-         api,
-         slot,
-         (unsigned)module_ident);
    }
    else
    {
@@ -779,13 +753,10 @@ static int app_exp_submodule_ind (
       data_cfg.outsize != p_exp_data->outsize)
    {
       APP_LOG_WARNING (
-         "    Warning expected  Data Dir: %s  In: %u bytes  Out: %u bytes  RealIn: %u bytes  RealOut: %u bytes\n",
+         "    Warning expected  Data Dir: %s  In: %u bytes  Out: %u bytes\n",
          app_utils_submod_dir_to_string (p_exp_data->data_dir),
          p_exp_data->insize,
-         p_exp_data->outsize,
-         data_cfg.insize,
-         data_cfg.outsize
-         );
+         p_exp_data->outsize);
    }
    ret = pnet_plug_submodule (
       net,
@@ -829,15 +800,6 @@ static int app_exp_submodule_ind (
          name,
          cyclic_data_callback,
          app);
-      APP_LOG_DEV_INFO (
-         "  Plug submodule successfull. Ret: %u API: %u Slot: %2u Subslot %u "
-         "Module ID: 0x%x Submodule ID: 0x%x \n",
-         ret,
-         api,
-         slot,
-         subslot,
-         (unsigned)module_id,
-         (unsigned)submodule_id);
    }
    else
    {
@@ -883,6 +845,7 @@ static int app_new_data_status_ind (
       (data_status & BIT (PNET_DATA_STATUS_BIT_IGNORE))
          ? "Ignore data status"
          : "Evaluate data status");
+
    if (is_running == false || is_valid == false)
    {
       app_set_outputs_default_value();
@@ -998,7 +961,7 @@ static void app_plug_dap (app_data_t * app, uint16_t number_of_ports)
       PNET_MOD_DAP_IDENT,
       PNET_SUBMOD_DAP_INTERFACE_1_IDENT,
       &cfg_dap_data);
-      
+
    app_exp_submodule_ind (
       app->net,
       app,
@@ -1062,7 +1025,6 @@ static void app_plug_dap (app_data_t * app, uint16_t number_of_ports)
  */
 static void app_cyclic_data_callback (app_subslot_t * subslot, void * tag)
 {
-   // Burada uyarı işlemleri yapılmalı
    app_data_t * app = (app_data_t *)tag;
    uint8_t indata_iops = PNET_IOXS_BAD;
    uint8_t indata_iocs = PNET_IOXS_BAD;
@@ -1072,8 +1034,7 @@ static void app_cyclic_data_callback (app_subslot_t * subslot, void * tag)
    uint16_t outdata_length;
    uint8_t outdata_iops;
    uint8_t outdata_buf[50]; /* Todo: Remove temporary buffer */
-   // APP_LOG_DEV_INFO("Cyclic Call\n");
-   // APP_LOG_DEV_INFO("Here\n");
+
    if (app == NULL)
    {
       APP_LOG_ERROR ("Application tag not set in subslot?\n");
