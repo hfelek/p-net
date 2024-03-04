@@ -222,21 +222,6 @@ uint8_t * app_data_get_input_data (
          dataCard.encoder_value[i] =
             pShmT9Plc->IOIn.t9enc[busSlot_nbr].value[i];
       }
-      for (int i = 0; i < GSDM_ENC4_CNT_CHANNEL_NUMBER; i++)
-      {
-         APP_LOG_DEV_INFO (
-            "Counter :%d, %u\n",
-            i + 1,
-            pShmT9Plc->IOIn.t9cnt[busSlot_nbr][i]);
-      }
-      for (int i = 0; i < GSDM_ENC4_CHANNEL_NUMBER; i++)
-      {
-         APP_LOG_DEV_INFO (
-            "Encoder :%d, %u\n",
-            i + 1,
-            pShmT9Plc->IOIn.t9enc[busSlot_nbr].value[i]);
-      }
-
       convertEndiannessUint32 (
          dataCard.counter_value,
          GSDM_ENC4_CNT_CHANNEL_NUMBER);
@@ -244,23 +229,6 @@ uint8_t * app_data_get_input_data (
 
       dataCard.di_status = pShmT9Plc->IOIn.t9di[busSlot_nbr];
       dataCard.encoder_direction = pShmT9Plc->IOIn.t9enc[busSlot_nbr].sign;
-
-      for (int i = 0; i < GSDM_ENC4_CNT_CHANNEL_NUMBER; i++)
-      {
-         APP_LOG_DEV_INFO (
-            "Counter :%d, %u\n",
-            i + 1,
-            pShmT9Plc->IOIn.t9cnt[busSlot_nbr][i]);
-      }
-      for (int i = 0; i < GSDM_ENC4_CHANNEL_NUMBER; i++)
-      {
-         APP_LOG_DEV_INFO (
-            "Encoder :%d, %u\n",
-            i + 1,
-            pShmT9Plc->IOIn.t9enc[busSlot_nbr].value[i]);
-      }
-      APP_LOG_DEV_INFO("pShmT9Plc->IOOut.t9encconf[busSlot_nbr].activation: %hhu\n",pShmT9Plc->IOOut.t9encconf[busSlot_nbr].activation);
-      APP_LOG_DEV_INFO("pShmT9Plc->IOOut.t9cntconf[busSlot_nbr].activation: %hhu\n",pShmT9Plc->IOOut.t9cntconf[busSlot_nbr].activation);
 
       memcpy (
          inputdata.bytes,
@@ -777,7 +745,7 @@ int app_data_write_parameter (
          break;
       case FREQUENCY_MODE:
          pShmT9Plc->IOOut.t9cntconf[busSlot_nbr].enable_frequency_mode = 1;
-         counter_enable = counter_enable & 0xFE;
+         counter_enable = counter_enable | 0x1;
          break;
       default:
          break;
@@ -810,7 +778,7 @@ int app_data_write_parameter (
          }
          else if ((cfg_data.mode[i] & 0x3) == COUNTER_MODE)
          {
-            counter_enable += ((0x3) << i*2);
+            counter_enable = counter_enable | ((0x3) << i*2);
             encoder_enable = encoder_enable & (uint8_t)(~((0x1) << i));
          }
          else if ((cfg_data.mode[i] & 0x3) == DIGITAL_INPUT_MODE)
@@ -822,10 +790,9 @@ int app_data_write_parameter (
          }
          else if ((cfg_data.mode[i] & 0x3) == FREQUENCY_MODE)
          {
-            {
-            }
             if (i != 0)
             { // only first channel can be set as frequency input
+               //APP_LOG_DEV_INFO("Should nt be there\n");
                encoder_enable = encoder_enable & (uint8_t)(~((0x1) << i));
                counter_enable = counter_enable &
                                 (uint8_t)(~((0x3) << i*2)); // set two channels
@@ -836,8 +803,8 @@ int app_data_write_parameter (
                
                enable_freqeuency_mode = true;
                encoder_enable = encoder_enable & (uint8_t)(~((0x1) << i));
-               counter_enable = counter_enable &
-                                (uint8_t)(~((0x3) << i*2)); // set two channels
+               counter_enable = counter_enable |
+                                (uint8_t)(((0x3) << i*2)); // set two channels
                                                           // for the same mode!
             }
          }
