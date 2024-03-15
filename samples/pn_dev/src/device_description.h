@@ -209,11 +209,11 @@ typedef struct _gsdm_t9_slot_enc_4_out_io_data_
 } gsdm_t9_slot_enc_4_out_io_data;
 
 
-typedef struct _gsdm_t9_slot_ao_8_in_io_data_
-{
-   uint8_t diagnostics[2];
+// typedef struct _gsdm_t9_slot_ao_8_in_io_data_
+// {
+//    uint8_t diagnostics[2];
 
-} gsdm_t9_slot_ao_8_in_io_data;
+// } gsdm_t9_slot_ao_8_in_io_data;
 
 typedef struct _gsdm_t9_slot_ao_8_out_io_data_
 {
@@ -222,11 +222,11 @@ typedef struct _gsdm_t9_slot_ao_8_out_io_data_
 } gsdm_t9_slot_ao_8_out_io_data;
 
 
-typedef struct _gsdm_t9_slot_ao_4_in_io_data_
-{
-   uint8_t diagnostics[2];
+// typedef struct _gsdm_t9_slot_ao_4_in_io_data_
+// {
+//    uint8_t diagnostics[2];
 
-} gsdm_t9_slot_ao_4_in_io_data;
+// } gsdm_t9_slot_ao_4_in_io_data;
 
 typedef struct _gsdm_t9_slot_ao_4_out_io_data_
 {
@@ -236,14 +236,14 @@ typedef struct _gsdm_t9_slot_ao_4_out_io_data_
 
 typedef struct _gsdm_t9_slot_ai_8_in_io_data_
 {
-   uint8_t diagnostics[2];
+   // uint8_t diagnostics[2];
    float ao_values[GSDM_AI8_CHANNEL_NUMBER];
 
 } gsdm_t9_slot_ai_8_in_io_data;
 
 typedef struct _gsdm_t9_slot_aio_8_in_io_data_
 {
-   uint8_t diagnostics[2];
+   // uint8_t diagnostics[2];
    float ao_values[GSDM_AIO8_CHANNEL_NUMBER];
 
 } gsdm_t9_slot_aio_8_in_io_data;
@@ -256,7 +256,7 @@ typedef struct _gsdm_t9_slot_aio_8_out_io_data_
 
 typedef struct _gsdm_t9_slot_aio_4_in_io_data_
 {
-   uint8_t diagnostics[2];
+   // uint8_t diagnostics[2];
    float ao_values[GSDM_AIO4_CHANNEL_NUMBER];
 
 } gsdm_t9_slot_aio_4_in_io_data;
@@ -270,7 +270,7 @@ typedef struct _gsdm_t9_slot_aio_4_out_io_data_
 
 typedef struct _gsdm_t9_slot_ai_4_in_io_data_
 {
-   uint8_t diagnostics[2];
+   // uint8_t diagnostics[2];
    float ao_values[GSDM_AI4_CHANNEL_NUMBER];
 
 } gsdm_t9_slot_ai_4_in_io_data;

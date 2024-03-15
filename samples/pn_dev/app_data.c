@@ -122,20 +122,21 @@ uint8_t * app_data_get_input_data (
       (submodule_id == APP_GSDML_SUBMOD_ID_AO8) ||
       (submodule_id == APP_GSDML_SUBMOD_ID_AO4))
    {
-      gsdm_t9_slot_ao_8_in_io_data dataCard;
-      memset (&dataCard, 0, sizeof (gsdm_t9_slot_ao_8_in_io_data));
-      memcpy (inputdata.bytes, &dataCard, sizeof (gsdm_t9_slot_ao_8_in_io_data));
+      return NULL;
+      // gsdm_t9_slot_ao_8_in_io_data dataCard;
+      // memset (&dataCard, 0, sizeof (gsdm_t9_slot_ao_8_in_io_data));
+      // memcpy (inputdata.bytes, &dataCard, sizeof (gsdm_t9_slot_ao_8_in_io_data));
 
-      *size = APP_GSDML_AO8_IO_DATA_INPUT_SIZE;
-      *iops = PNET_IOXS_GOOD;
-      return inputdata.bytes;
+      // *size = APP_GSDML_AO8_IO_DATA_INPUT_SIZE;
+      // *iops = PNET_IOXS_GOOD;
+      // return inputdata.bytes;
    }
 
    if ((submodule_id == APP_GSDML_SUBMOD_ID_AI8))
    {
       gsdm_t9_slot_ai_8_in_io_data dataCard;
 
-      memset (&dataCard, 0, sizeof (dataCard.diagnostics));
+      // memset (&dataCard, 0, sizeof (dataCard.diagnostics));
       memcpy (
          dataCard.ao_values,
          pShmT9Plc->IOIn.t9ai[busSlot_nbr],
@@ -154,7 +155,7 @@ uint8_t * app_data_get_input_data (
    {
       gsdm_t9_slot_aio_8_in_io_data dataCard;
 
-      memset (&dataCard, 0, sizeof (dataCard.diagnostics));
+      // memset (&dataCard, 0, sizeof (dataCard.diagnostics));
       memcpy (
          dataCard.ao_values,
          pShmT9Plc->IOIn.t9ai[busSlot_nbr],
@@ -173,7 +174,7 @@ uint8_t * app_data_get_input_data (
    {
       gsdm_t9_slot_aio_4_in_io_data dataCard;
 
-      memset (&dataCard, 0, sizeof (dataCard.diagnostics));
+      // memset (&dataCard, 0, sizeof (dataCard.diagnostics));
       memcpy (
          dataCard.ao_values,
          pShmT9Plc->IOIn.t9ai[busSlot_nbr],
@@ -244,7 +245,7 @@ uint8_t * app_data_get_input_data (
    {
       gsdm_t9_slot_ai_4_in_io_data dataCard;
 
-      memset (&dataCard, 0, sizeof (dataCard.diagnostics));
+      // memset (&dataCard, 0, sizeof (dataCard.diagnostics));
       memcpy (
          dataCard.ao_values,
          pShmT9Plc->IOIn.t9ai[busSlot_nbr],

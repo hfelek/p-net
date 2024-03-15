@@ -18,7 +18,7 @@
 
 typedef struct _t9_encoder_
 {
-	unsigned short int value[MAX_NUMBER_OF_ENC_CHANNEL];
+	unsigned int value[MAX_NUMBER_OF_ENC_CHANNEL];
 	unsigned char 	   sign;
 }t9_encoder;
 

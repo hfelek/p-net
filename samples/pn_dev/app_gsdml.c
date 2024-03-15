@@ -283,7 +283,7 @@ static const app_gsdml_submodule_t submodule_AO8 = {
    .name = "Module AO8",
    .api = APP_GSDML_API,
    .data_dir = PNET_DIR_IO,
-   .insize = APP_GSDML_AO8_IO_DATA_INPUT_SIZE,
+   .insize = 0,
    .outsize = APP_GSDML_AO8_IO_DATA_OUTPUT_SIZE,
    .parameters = {APP_GSDML_PARAMETER_AO8_IDX}};
 
@@ -292,7 +292,7 @@ static const app_gsdml_submodule_t submodule_AO4 = {
    .name = "Module AO4",
    .api = APP_GSDML_API,
    .data_dir = PNET_DIR_IO,
-   .insize = APP_GSDML_AO4_IO_DATA_INPUT_SIZE,
+   .insize = 0,
    .outsize = APP_GSDML_AO4_IO_DATA_OUTPUT_SIZE,
    .parameters = {APP_GSDML_PARAMETER_AO4_IDX}};
 

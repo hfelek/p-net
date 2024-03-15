@@ -223,10 +223,10 @@ typedef struct
 #define APP_GSDML_DO16_IO_DATA_OUTPUT_SIZE    sizeof(gsdm_t9_slot_do_16_out_io_data) /* bytes */
 #define APP_GSDML_DI16_IO_DATA_INPUT_SIZE     sizeof(gsdm_t9_slot_di_16_in_io_data) /* bytes */
 
-#define APP_GSDML_AO8_IO_DATA_INPUT_SIZE      sizeof(gsdm_t9_slot_ao_8_in_io_data) /* bytes */
+// #define APP_GSDML_AO8_IO_DATA_INPUT_SIZE      sizeof(gsdm_t9_slot_ao_8_in_io_data) /* bytes */
 #define APP_GSDML_AO8_IO_DATA_OUTPUT_SIZE     sizeof(gsdm_t9_slot_ao_8_out_io_data) /* bytes */
 
-#define APP_GSDML_AO4_IO_DATA_INPUT_SIZE      sizeof(gsdm_t9_slot_ao_4_in_io_data) /* bytes */
+// #define APP_GSDML_AO4_IO_DATA_INPUT_SIZE      sizeof(gsdm_t9_slot_ao_4_in_io_data) /* bytes */
 #define APP_GSDML_AO4_IO_DATA_OUTPUT_SIZE     sizeof(gsdm_t9_slot_ao_4_out_io_data) /* bytes */
 
 #define APP_GSDML_AI8_IO_DATA_INPUT_SIZE      sizeof(gsdm_t9_slot_ai_8_in_io_data) /* bytes */
