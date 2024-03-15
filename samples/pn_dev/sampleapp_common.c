@@ -46,13 +46,13 @@
 #define EXTENDED_CHANNEL_ERRORTYPE_LINE_DELAY_MISMATCH        0x8002
 
 #define APP_ALARM_USI                       0x0010
-#define APP_DIAG_CHANNEL_NUMBER             4
+#define APP_DIAG_CHANNEL_NUMBER             1
 #define APP_DIAG_CHANNEL_DIRECTION          PNET_DIAG_CH_PROP_DIR_INPUT
 #define APP_DIAG_CHANNEL_NUMBER_OF_BITS     PNET_DIAG_CH_PROP_TYPE_1_BIT
 #define APP_DIAG_CHANNEL_SEVERITY           PNET_DIAG_CH_PROP_MAINT_FAULT
-#define APP_DIAG_CHANNEL_ERRORTYPE          CHANNEL_ERRORTYPE_SHORT_CIRCUIT
+#define APP_DIAG_CHANNEL_ERRORTYPE          CHANNEL_ERRORTYPE_LINE_BREAK
 #define APP_DIAG_CHANNEL_ADDVALUE_A         0
-#define APP_DIAG_CHANNEL_ADDVALUE_B         1234
+#define APP_DIAG_CHANNEL_ADDVALUE_B         1984
 #define APP_DIAG_CHANNEL_EXTENDED_ERRORTYPE 0
 #define APP_DIAG_CHANNEL_QUAL_SEVERITY      0 /* Not used (Max one bit set) */
 
@@ -1290,7 +1290,7 @@ static void app_handle_demo_pnet_api (app_data_t * app)
       .ch = APP_DIAG_CHANNEL_NUMBER,
       .ch_grouping = PNET_DIAG_CH_INDIVIDUAL_CHANNEL,
       .ch_direction = APP_DIAG_CHANNEL_DIRECTION};
-
+   app->alarm_demo_state = APP_DEMO_STATE_DIAG_STD_ADD;
    /* Loop though all subslots to find first digital 8-bit input subslot */
    while (!found_inputsubslot && (slot < PNET_MAX_SLOTS))
    {
@@ -1321,12 +1321,20 @@ static void app_handle_demo_pnet_api (app_data_t * app)
    diag_source.slot = slot;
    diag_source.subslot = p_subslot->subslot_nbr;
 
+      APP_LOG_DEV_INFO(".api: %u\n",diag_source.api);
+      APP_LOG_DEV_INFO(".slot: %hu\n",diag_source.slot);
+      APP_LOG_DEV_INFO(".subslot: %hu\n",diag_source.subslot);
+      APP_LOG_DEV_INFO(".ch: %u\n",diag_source.ch);
+      APP_LOG_DEV_INFO(".ch_grouping: %u\n",diag_source.ch_grouping);
+      APP_LOG_DEV_INFO(".ch_direction: %u\n",diag_source.ch_direction);
+
    switch (app->alarm_demo_state)
    {
    case APP_DEMO_STATE_ALARM_SEND:
       if (app->alarm_allowed == true && app_is_connected_to_controller (app))
       {
          app->alarm_payload[0]++;
+          app->alarm_payload[0] = 0x001F;
          APP_LOG_INFO (
             "Sending process alarm from slot %u subslot %u USI %u to "
             "PLC. Payload: 0x%x\n",
@@ -1356,6 +1364,7 @@ static void app_handle_demo_pnet_api (app_data_t * app)
       break;
 
    case APP_DEMO_STATE_CYCLIC_REDUNDANT:
+   break;
       APP_LOG_INFO (
          "Setting cyclic data to backup and to redundant. See Wireshark.\n");
       if (pnet_set_primary_state (app->net, false) != 0)
@@ -1369,6 +1378,7 @@ static void app_handle_demo_pnet_api (app_data_t * app)
       break;
 
    case APP_DEMO_STATE_CYCLIC_NORMAL:
+   break;
       APP_LOG_INFO (
          "Setting cyclic data back to primary and non-redundant. See "
          "Wireshark.\n");
@@ -1519,7 +1529,7 @@ static void app_handle_demo_pnet_api (app_data_t * app)
    switch (app->alarm_demo_state)
    {
    case APP_DEMO_STATE_ALARM_SEND:
-      app->alarm_demo_state = APP_DEMO_STATE_CYCLIC_REDUNDANT;
+      app->alarm_demo_state = APP_DEMO_STATE_ALARM_SEND;
       break;
    case APP_DEMO_STATE_CYCLIC_REDUNDANT:
       app->alarm_demo_state = APP_DEMO_STATE_CYCLIC_NORMAL;
@@ -1528,7 +1538,7 @@ static void app_handle_demo_pnet_api (app_data_t * app)
       app->alarm_demo_state = APP_DEMO_STATE_DIAG_STD_ADD;
       break;
    case APP_DEMO_STATE_DIAG_STD_ADD:
-      app->alarm_demo_state = APP_DEMO_STATE_DIAG_STD_UPDATE;
+      app->alarm_demo_state = APP_DEMO_STATE_DIAG_STD_ADD;
       break;
    case APP_DEMO_STATE_DIAG_STD_UPDATE:
       app->alarm_demo_state = APP_DEMO_STATE_DIAG_USI_ADD;
@@ -1601,6 +1611,8 @@ static void update_button_states (app_data_t * app)
 
 static void app_handle_event_timer (app_data_t * app)
 {
+   static int dummy = 0;
+
    os_event_clr (app->main_events, APP_EVENT_TIMER);
 
    update_button_states (app);
@@ -1614,6 +1626,14 @@ static void app_handle_event_timer (app_data_t * app)
    {
       app_handle_demo_pnet_api (app);
    }
+   if(dummy == 10000){
+         APP_LOG_DEV_INFO("In Cycle\n");
+         app_handle_demo_pnet_api (app);
+         dummy =0;
+      }
+      else{
+         dummy++;
+      }
    app->button2_pressed_previous = app->button2_pressed;
 
    /* Run p-net stack */

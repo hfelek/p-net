@@ -960,3 +960,5 @@ uint8_t convertModuleID (uint32_t moduleID)
       break;
    }
 }
+
+// void checkDiagnosis()
